@@ -13,11 +13,9 @@ const UserSchema = Schema({
     country: { type: String, required: true },
     zip: { type: String, required: true },
     did: { type: Schema.Types.Mixed, required: true },
-    vc: { type: String, required: true },
+    vc: { type: [String], required: true },
     active: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: Date
-})
+}, { timestamps: true })
 
 const User = model("User", UserSchema);
 

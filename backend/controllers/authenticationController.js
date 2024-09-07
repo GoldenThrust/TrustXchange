@@ -10,25 +10,11 @@ import { redisDB } from "../config/db.js";
 class AuthenticationController {
     async verify(req, res) {
         try {
-            const user = await User.findById(res.locals.jwtData.id);
-
-            if (!user) {
-                return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" })
-            }
-
-            if (!user.active) {
-                return res.status(403).json({ status: "ERROR", message: "Account is not active" });
-            }
-
-            if (user._id.toString() !== res.locals.jwtData.id) {
-                return res.status(403).json({ status: "ERROR", message: "Permissions didn't match" });
-            }
-
-            const { name, email, address, image, city, state, country, zip, did, vc } = user;
+            const { name, email, address, image, city, state, country, zip, did } = res.locals.user;
 
             return res
                 .status(200)
-                .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did, vc } });
+                .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did: did.uri } });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ status: "ERROR", message: error.message });
@@ -64,11 +50,12 @@ class AuthenticationController {
                     publish: true,
                 },
             })
+            const storeDid = await did.export();
 
-            const vc = await getVCTokens(name, countrycode, did.uri);
+            const vc = await getVCTokens(name, countrycode, storeDid.uri);
 
 
-            const user = new User({ name, email, password: hashedPassword, phonenumber, image, address, city, state, zip, country, did, vc });
+            const user = new User({ name, email, password: hashedPassword, phonenumber, image, address, city, state, zip, country, did: storeDid, vc: [vc] });
             await user.save();
 
             // send email to activate user account
@@ -127,11 +114,11 @@ class AuthenticationController {
                 signed: true,
             });
 
-            const { name, address, image, city, state, country, zip, did, vc } = user;
+            const { name, address, image, city, state, country, zip, did } = user;
 
             return res
                 .status(200)
-                .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did, vc } });
+                .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did: did.uri } });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ status: "ERROR", message: error.message });
@@ -237,7 +224,7 @@ class AuthenticationController {
 
         return res
             .status(200)
-            .json({ message: "OK", user: { name, email, address, image, city, state, country, zip, did, vc } });
+            .json({ message: "OK", user: { name, email, address, image, city, state, country, zip, did: did.uri } });
     }
 
 
@@ -253,7 +240,6 @@ class AuthenticationController {
         } catch (error) {
             res.status(500).json({ status: "ERROR", message: "Failed to send password link" });
         }
-
 
         res.json({ status: "OK", message: "We've sent a password reset link to your email. Please check your inbox to reset your password." });
     }

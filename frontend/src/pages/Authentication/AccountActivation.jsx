@@ -16,7 +16,7 @@ export default function AccountActivate() {
     useEffect(() => {
         if (isAuthenticated) {
             const timer = setTimeout(() => {
-                navigate('/status?query=authenticated', { replace: true });
+                navigate('/dashboard', { replace: true });
             }, 1000);
             return () => clearTimeout(timer);
         }

@@ -8,10 +8,6 @@ import "dotenv/config"
 import { SitemapStream, streamToPromise } from "sitemap";
 import { Readable } from "stream";
 import { createGzip } from "zlib";
-
-import { TbdexHttpClient, Rfq, Quote, Order, OrderStatus, Close, Message, resolveDid } from '@tbdex/http-client';
-import { VerifiableCredential, PresentationExchange } from '@web5/credentials';
-import { hostUrl, pfiDids } from "./utils/constants.js";
 import path from "path";
 
 import { fileURLToPath } from "url";
@@ -25,8 +21,6 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = createServer(app);
 
-
-
 app.set("trust proxy", 3)
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
@@ -34,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use('/auth', authRoutes)
-app.use('xchange', messengerRoute);
+app.use('/xchange', messengerRoute);
 
 // Generate sitemap
 app.get("/sitemap.xml", function (req, res) {

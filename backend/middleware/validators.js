@@ -18,6 +18,45 @@ export function validate(validations) {
     return res.status(422).json({ status: "ERROR", message: errors.array()[0]['msg'] });
   };
 };
+import { check } from 'express-validator';
+
+export const requestForQuoteValidator = [
+    check('offering')
+        .isString().withMessage('Offering must be a string')
+        .notEmpty().withMessage('Offering is required'),
+
+    check('amount')
+        .isNumeric().withMessage('Amount must be a number')
+        .isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
+
+    check('payinpaymentDetails')
+        .isString().withMessage('Pay-in Payment Details must be a string')
+        .notEmpty().withMessage('Pay-in Payment Details is required'),
+
+    check('payoutPaymentDetails')
+        .isString().withMessage('Payout Payment Details must be a string')
+        .notEmpty().withMessage('Payout Payment Details is required'),
+
+    check('payinkind')
+        .isString().withMessage('Pay-in Kind must be a string')
+        .notEmpty().withMessage('Pay-in Kind is required'),
+
+    check('payoutKind')
+        .isString().withMessage('Payout Kind must be a string')
+        .notEmpty().withMessage('Payout Kind is required'),
+];
+
+
+export const quoteValidator = [
+    check('pfiDid')
+        .isString().withMessage('pfiDid must be a string')
+        .notEmpty().withMessage('pfiDid is required'),
+
+    check('exchangeId')
+        .notEmpty().withMessage('exchangeId is required')
+        .isString().withMessage('exchangeId must be a string or a valid identifier'),
+];
+
 
 export const resetPasswordValidator = [
   body("password")
@@ -29,7 +68,8 @@ export const resetPasswordValidator = [
     .matches(/\d/)
     .withMessage("Password must contain at least one number"),
 ]
-// Login validator can be reused for both login and signup
+
+
 export const loginValidator = [
   body("email")
     .trim()
@@ -40,7 +80,6 @@ export const loginValidator = [
   ...resetPasswordValidator,
 ];
 
-// Sign-up validator
 export const signupValidator = [
   body("name")
     .trim()
@@ -92,3 +131,19 @@ export const signupValidator = [
 
   ...loginValidator,
 ];
+
+
+export const offeringFilterValidator = [
+  body('payinCurrencyCode')
+  .trim()
+  .notEmpty()
+  .withMessage("Please provide a payin currency code")
+  .isLength({ min: 3, max: 3 })
+  .withMessage("Payin currency code should be 3 characters long"),
+  body('payoutCurrencyCode')
+  .trim()
+  .notEmpty()
+  .withMessage("Please provide a payout currency code")
+  .isLength({ min: 3, max: 3 })
+  .withMessage("Payout currency code should be 3 characters long"),
+]
