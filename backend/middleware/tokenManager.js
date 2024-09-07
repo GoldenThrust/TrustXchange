@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { COOKIE_NAME } from "../utils/constants";
+import { COOKIE_NAME } from "../utils/constants.js";
 
 export function createToken(id, email, expiresIn) {
   const payload = { id, email };

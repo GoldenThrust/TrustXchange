@@ -3,6 +3,7 @@ import { createServer } from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { mongoDB, redisDB } from "./config/db.js";
+import "dotenv/config"
 
 import { SitemapStream, streamToPromise } from "sitemap";
 import { Readable } from "stream";
@@ -27,7 +28,7 @@ const server = createServer(app);
 
 
 app.set("trust proxy", 3)
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -50,11 +51,19 @@ app.get("/sitemap.xml", function (req, res) {
     const smStream = new SitemapStream({ hostname: 'https://example.com/' })
     const pipeline = smStream.pipe(createGzip())
 
+    const authEndpoints = [
+      ...authEndpoints.map(endpoint => ({ url: `/auth/${endpoint}` })),
+    ];
+
     Readable.from([
       {url: '/auth/register'}, 
       {url: '/auth/login'}, 
       {url: '/auth/verify'}, 
       {url: '/auth/logout'}, 
+      {url: '/auth/activate'}, 
+      {url: '/auth/resend-activate'}, 
+      {url: '/auth/forgot-password'}, 
+      {url: '/auth/reset-password'}, 
     ]).pipe(smStream)
 
     streamToPromise(pipeline).then(sm => redisDB.set('sitemap', sm, 10 * 24 * 60 * 60))

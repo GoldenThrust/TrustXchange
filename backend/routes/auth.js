@@ -1,17 +1,18 @@
 import { Router } from "express";
-import { loginValidator, signupValidator, validate } from "../middleware/validators";
-import authContoller from "../controllers/authenticationController";
-import { verifyToken } from "../middleware/tokenManager";
+import { loginValidator, resetPasswordValidator, signupValidator, validate } from "../middleware/validators.js";
+import authContoller from "../controllers/authenticationController.js";
+import { verifyToken } from "../middleware/tokenManager.js";
+import { upload } from "../utils/constants.js";
 const authRoutes = Router();
 
-auth.post('/register', upload.single('image'), validate(signupValidator), authContoller.register)
-auth.post('/login', validate(loginValidator),authContoller.login)
-auth.get('/logout', verifyToken, authContoller.logout)
-auth.get('/verify', verifyToken, authContoller.verify)
-auth.get('/activate', authContoller.activateAccount)
-auth.post('/resend-activate', authContoller.resendActivationEmail)
-auth.post('/forgot-password', authContoller.forgotPassword)
-auth.post('/reset-password', authContoller.resetPassword)
+authRoutes.post('/register', upload.single('image'), validate(signupValidator), authContoller.register)
+authRoutes.post('/login', validate(loginValidator),authContoller.login)
+authRoutes.get('/logout', verifyToken, authContoller.logout)
+authRoutes.get('/verify', verifyToken, authContoller.verify)
+authRoutes.get('/activate/:token', authContoller.activateAccount)
+authRoutes.post('/resend-activate', authContoller.resendActivationEmail)
+authRoutes.post('/forgot-password', authContoller.forgotPassword)
+authRoutes.post('/reset-password/:token', validate(resetPasswordValidator), authContoller.resetPassword)
 
 
 export default authRoutes;

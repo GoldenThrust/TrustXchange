@@ -1,11 +1,11 @@
-import User from "../models/user";
+import User from "../models/user.js";
 import { hash, verify } from "argon2";
-import { createToken } from "../middleware/tokenManager";
-import { COOKIE_NAME, countryCode } from "../utils/constants";
+import { createToken } from "../middleware/tokenManager.js";
+import { COOKIE_NAME, countryCode } from "../utils/constants.js";
 import { DidDht } from "@web5/dids";
-import { getVCTokens } from "../utils/token";
-import mail from "../config/mail";
-import { redisDB } from "../config/db";
+import { getVCTokens } from "../utils/token.js";
+import mail from "../config/mail.js";
+import { redisDB } from "../config/db.js";
 
 class AuthenticationController {
     async verify(req, res) {
@@ -13,27 +13,32 @@ class AuthenticationController {
             const user = await User.findById(res.locals.jwtData.id);
 
             if (!user) {
-                return res.status(401).send("User not registered OR Token malfunctioned");
+                return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" })
+            }
+
+            if (!user.active) {
+                return res.status(403).json({ status: "ERROR", message: "Account is not active" });
             }
 
             if (user._id.toString() !== res.locals.jwtData.id) {
-                return res.status(401).send("Permissions didn't match");
+                return res.status(403).json({ status: "ERROR", message: "Permissions didn't match" });
             }
+
+            const { name, email, address, image, city, state, country, zip, did, vc } = user;
 
             return res
                 .status(200)
-                .json({ message: "OK", name: user.name, email: user.email });
+                .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did, vc } });
         } catch (error) {
             console.error(error);
-            return res.status(200).json({ message: "ERROR", cause: error.message });
+            return res.status(500).json({ status: "ERROR", message: error.message });
         }
     }
 
     async register(req, res) {
         try {
-            const { firstname, lastname, email, password, phonenumber, address, city, state, zip, countrycode } = req.body;
+            const { name, email, password, phonenumber, address, city, state, zip, countrycode } = req.body;
             const country = countryCode[countrycode]
-            const name = `${firstname} ${lastname}`;
             let image = '';
             if (req.file) {
                 image = req.file.path;
@@ -45,10 +50,10 @@ class AuthenticationController {
 
             if (existingUser) {
                 if (existingUser.email === email) {
-                    return res.status(401).json({ status: "ERROR", message: "Email is already registered"});
+                    return res.status(403).json({ status: "ERROR", message: "Email is already registered" });
                 }
                 if (existingUser.phonenumber === phonenumber) {
-                    return res.status(401).json({ status: "ERROR", message: "Phone number is already registered"});
+                    return res.status(403).json({ status: "ERROR", message: "Phone number is already registered" });
                 }
             }
 
@@ -60,16 +65,17 @@ class AuthenticationController {
                 },
             })
 
-            const vc = getVCTokens(name, countrycode, did);
+            const vc = await getVCTokens(name, countrycode, did.uri);
 
-            const user = new User({ name, email, password: hashedPassword, phonenumber, address, city, state, zip, country, did, vc });
+
+            const user = new User({ name, email, password: hashedPassword, phonenumber, image, address, city, state, zip, country, did, vc });
             await user.save();
 
             // send email to activate user account
             try {
-                mail.sendActivationEmail(user)
+                await mail.sendActivationEmail(user)
             } catch (error) {
-                res.json({ status: "ERROR",  message: error.message });
+                return res.status(500).json({ status: "ERROR", message: "Failed to send activation link" });
             }
 
             return res
@@ -77,7 +83,7 @@ class AuthenticationController {
                 .json({ status: "OK", message: "We've sent an activation link to your email. Please check your inbox to activate your account." });
         } catch (error) {
             console.error(error);
-            return res.status(200).json({ status: "ERROR", message: error.message });
+            return res.status(500).json({ status: "ERROR", message: error.message });
         }
     }
 
@@ -90,12 +96,12 @@ class AuthenticationController {
             }
 
             if (!user.active) {
-                return res.status(403).json({ status: "ERROR", message: "Account is not active"})
+                return res.status(403).json({ status: "ERROR", message: "Account is not active" })
             }
 
             const isPasswordCorrect = await verify(user.password, password);
             if (!isPasswordCorrect) {
-                return res.status(403).json({ message: "Password is incorrect"})
+                return res.status(401).json({ status: "ERROR", message: "Password is incorrect" })
             }
 
             res.clearCookie(COOKIE_NAME, {
@@ -121,28 +127,27 @@ class AuthenticationController {
                 signed: true,
             });
 
+            const { name, address, image, city, state, country, zip, did, vc } = user;
+
             return res
-                .status(201)
-                .json({ message: "OK" });
+                .status(200)
+                .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did, vc } });
         } catch (error) {
             console.error(error);
-            return res.status(200).json({ message: "ERROR", cause: error.message });
+            return res.status(500).json({ status: "ERROR", message: error.message });
         }
     }
 
-    
-    async logout(
-        req,
-        res,
-    ) {
+
+    async logout(req, res) {
         try {
             const user = await User.findById(res.locals.jwtData.id);
             if (!user) {
-                return res.status(401).send({ "message": "User not registered OR Token malfunctioned"});
+                return res.status(401).send({ "message": "User not registered OR Token malfunctioned" });
             }
 
             if (user._id.toString() !== res.locals.jwtData.id) {
-                return res.status(401).send("Permissions didn't match");
+                return res.status(403).send("Permissions didn't match");
             }
 
             res.clearCookie(COOKIE_NAME, {
@@ -157,10 +162,10 @@ class AuthenticationController {
 
             return res
                 .status(200)
-                .json({ message: "OK" });
+                .json({ status: "OK" });
         } catch (error) {
             console.error(error);
-            return res.status(200).json({ message: "ERROR", cause: error.message });
+            return res.status(500).json({ status: "ERROR", message: error.message });
         }
     }
 
@@ -169,34 +174,70 @@ class AuthenticationController {
 
         const user = await User.findOne({ email });
 
+        if (user.active) {
+            return res.json({ status: "ERROR", message: "Account is already activate" });
+        }
+
         try {
-            mail.sendActivationEmail(user)
+            await mail.sendActivationEmail(user)
         } catch (error) {
-            res.json({ status: "ERROR",  message: error.message });
+            res.json({ status: "ERROR", message: "Failed to send activation link" });
         }
 
 
         res.json({ status: "OK", message: "We've sent an activation link to your email. Please check your inbox to activate your account." });
     }
 
-    
+
     async activateAccount(req, res) {
-        const token = req.query.token;
+        const authtoken = req.params.token;
 
-        const email = redisDB.get(token);
+        const mail = await redisDB.get(authtoken);
 
-        if (!email) {
+        if (!mail) {
             return res.status(401).json({ status: "ERROR", message: "Invalid or expired token" });
         }
 
-        await User.findOneAndUpdate(
-            { email },
+        const user = await User.findOneAndUpdate(
+            { email: mail },
             { $set: { active: true } },
             { new: true }
         );
 
-        redisDB.del(token);
-        res.status(201).json({ status: "OK", message: "Account activated successfully"})
+        if (!user) {
+            return res.status(500).json({ status: "ERROR", message: "User not found" });
+        }
+
+
+        res.clearCookie(COOKIE_NAME, {
+            secure: true,
+            sameSite: "none",
+            httpOnly: true,
+            domain: "localhost",
+            signed: true,
+            path: "/",
+        });
+
+        const token = createToken(user._id.toString(), user.email, "7d");
+        const expires = new Date();
+        expires.setDate(expires.getDate() + 7);
+
+        res.cookie(COOKIE_NAME, token, {
+            secure: true,
+            sameSite: "none",
+            httpOnly: true,
+            path: "/",
+            domain: "localhost",
+            expires,
+            signed: true,
+        });
+
+        await redisDB.del(token);
+        const { name, email, address, image, city, state, country, zip, did, vc } = user;
+
+        return res
+            .status(200)
+            .json({ message: "OK", user: { name, email, address, image, city, state, country, zip, did, vc } });
     }
 
 
@@ -204,36 +245,38 @@ class AuthenticationController {
         const email = req.body.email;
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(401).json({ status: "ERROR", message: "User not registered"});
+            return res.status(401).json({ status: "ERROR", message: "User not registered" });
         }
 
         try {
-            mail.sendResetPasswordEmail(user);
+            await mail.sendResetPasswordEmail(user);
         } catch (error) {
-            res.json({ status: "ERROR",  message: error.message });
+            res.status(500).json({ status: "ERROR", message: "Failed to send password link" });
         }
 
-    
+
         res.json({ status: "OK", message: "We've sent a password reset link to your email. Please check your inbox to reset your password." });
     }
 
 
     async resetPassword(req, res) {
-        const { newPassword } = req.body;
-        const token = req.query.token;
-        const email = redisDB.get(token);
+        const { password } = req.body;
+        const token = req.params.token;
+        const email = await redisDB.get(token);
+        console.log(token, email);
         if (!email) {
             return res.status(401).json({ status: "ERROR", message: "Invalid or expired token" });
         }
-        const hashedPassword = await hash(newPassword);
+
+        const hashedPassword = await hash(password);
         await User.findOneAndUpdate(
             { email },
             { $set: { password: hashedPassword } },
             { new: true }
         );
 
-        redisDB.del(token);
-        res.status(201).json({ status: "OK", message: "Password reset successfully"})
+        await redisDB.del(token);
+        res.status(201).json({ status: "OK", message: "Password reset successfully" })
     }
 }
 

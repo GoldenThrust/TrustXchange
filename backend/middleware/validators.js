@@ -10,50 +10,16 @@ export function validate(validations) {
       }
     }
     const errors = validationResult(req);
-    
+
     if (errors.isEmpty()) {
       return next();
     }
 
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({ status: "ERROR", message: errors.array()[0]['msg'] });
   };
 };
 
-// Login validator can be reused for both login and signup
-export const loginValidator = [
-  body("email")
-    .trim()
-    .isEmail()
-    .withMessage("Please provide a valid email address"),
-  body("password")
-    .trim()
-    .isLength({ min: 6 })
-    .withMessage("Password should contain at least 6 characters"),
-];
-
-// Sign-up validator
-export const signupValidator = [
-  body("firstname")
-    .trim()
-    .notEmpty()
-    .withMessage("First name is required")
-    .isAlpha()
-    .withMessage("First name should only contain letters"),
-  
-  body("lastname")
-    .trim()
-    .notEmpty()
-    .withMessage("Last name is required")
-    .isAlpha()
-    .withMessage("Last name should only contain letters"),
-  
-  body("email")
-    .trim()
-    .notEmpty()
-    .withMessage("Email is required")
-    .isEmail()
-    .withMessage("Please provide a valid email address"),
-
+export const resetPasswordValidator = [
   body("password")
     .trim()
     .notEmpty()
@@ -62,6 +28,26 @@ export const signupValidator = [
     .withMessage("Password should contain at least 6 characters")
     .matches(/\d/)
     .withMessage("Password must contain at least one number"),
+]
+// Login validator can be reused for both login and signup
+export const loginValidator = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email address"),
+  ...resetPasswordValidator,
+];
+
+// Sign-up validator
+export const signupValidator = [
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("Name is required")
+    .matches(/^[a-zA-Z]+( [a-zA-Z]+){1,2}$/)
+    .withMessage("Name should consist of a first name, an optional middle name, and a last name, separated by a single space each."),
 
   body("phonenumber")
     .trim()
@@ -99,11 +85,7 @@ export const signupValidator = [
 
   body().custom((value, { req }) => {
     if (!req.file) {
-      throw new Error('Profile image is required');
-    }
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    if (!allowedMimeTypes.includes(req.file.mimetype)) {
-      throw new Error('Invalid image format. Only JPEG, PNG, and GIF are allowed.');
+      throw new Error('Please provide a profile picture');
     }
     return true;
   }),

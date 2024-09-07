@@ -1,28 +1,3 @@
-import path from "path";
-import multer from "multer";
-import { fileURLToPath } from "url";
-import "dotenv/config"
-
-export const COOKIE_NAME = "auth_token";
-export const __filename = fileURLToPath(import.meta.url);
-export const __dirname = path.dirname(__filename);
-
-export const Dev = process.env.NODE_ENV === "production" ? false : true;
-
-export const hostUrl = process.env.HOST_URL
-
-export const pfiDids = {
-  "AquaFinance Capital":
-    "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
-  "Flowback Financial":
-    "did:dht:zkp5gbsqgzn69b3y5dtt5nnpjtdq6sxyukpzo68npsf79bmtb9zy",
-  "Vertex Liquid Assets":
-    "did:dht:enwguxo8uzqexq14xupe4o9ymxw3nzeb9uug5ijkj9rhfbf1oy5y",
-  "Titanium Trust":
-    "did:dht:ozn5c51ruo7z63u1h748ug7rw5p1mq3853ytrd5gatu9a8mm8f1o",
-};
-
-
 export const countryCode = {
   AF: "Afghanistan",
   AX: "Aland Islands",
@@ -271,5 +246,3 @@ export const countryCode = {
   ZM: "Zambia",
   ZW: "Zimbabwe"
 };
-
-export const upload = multer({ dest: path.resolve(__dirname, '../upload') });

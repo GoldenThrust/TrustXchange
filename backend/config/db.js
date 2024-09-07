@@ -1,10 +1,10 @@
-import { createClient, RedisClientType } from "redis";
+import { createClient } from "redis";
 import mongoose from "mongoose";
 import { Dev } from "../utils/constants.js"
 
 class DB {
   constructor() {
-    this.uri = Dev ? "mongodb://0.0.0.0:27017/TeamSphere" : `${process.env.DB_CONNECTION}`;
+    this.uri = Dev ? "mongodb://0.0.0.0:27017/trustxchange" : `${process.env.DB_CONNECTION}`;
   }
 
   async run() {
@@ -32,7 +32,7 @@ class RedisClient {
         password: process.env.REDIS_PASSWORD,
         socket: {
           host: process.env.REDIS_HOST,
-          port: process.env.REDIS_PORT
+          port: process.env.REDIS_PORT,
         },
       });
     }

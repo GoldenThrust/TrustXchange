@@ -1,9 +1,11 @@
-import { createTransport, Transporter } from "nodemailer";
+import { createTransport } from "nodemailer";
 import { redisDB } from "./db.js"
 import { hostUrl } from "../utils/constants.js";
+import crypto from "crypto";
 
 class MailService {
   constructor() {
+    this.hostUrl = hostUrl;
     this.transporter = createTransport({
       service: "Gmail",
       host: process.env.MAIL_HOST,
@@ -16,19 +18,19 @@ class MailService {
     });
   }
 
-  sendActivationEmail(user) {
+  async sendActivationEmail(user) {
     const token = crypto.randomBytes(16).toString("hex");
-    const verificationLink = `${hostUrl}/auth/activate?token=${token}`;
+    const verificationLink = `${this.hostUrl}/activate-account?token=${token}`;
 
     const mailTemplate =
       `<body>
     <h1>Verify Your Email</h1>
     <p>Click the link below to verify your email:</p>
     <a href="${verificationLink}">Verify Email</a>
-    <p>This link will expire in 20 hours.</p>
+    <p>This link will expire in 24 hours.</p>
     </body>`
 
-    redisDB.set(token, user.email, 20 * 60 * 60)
+    await redisDB.set(token, user.email, 24 * 60 * 60)
 
     const mailOptions = {
       from: process.env.MAIL_USERNAME,
@@ -38,22 +40,22 @@ class MailService {
       html: mailTemplate
     };
 
-    return this.transporter.sendMail(mailOptions, (err, result) => {
-      if (err) {
-        console.error("Error sending email:", err);
-        return Promise.reject(err);
-      }
-      console.log("Email sent:", result);
-      return Promise.resolve();
-    });
+    return new Promise((resolve, reject) => {
+      this.transporter.sendMail(mailOptions, async (err, result) => {
+        if (err) {
+          return reject(err)
+        }
+        return resolve(result);
+      });
+    })
   }
 
 
-  sendResetPasswordEmail(user) {
+  async sendResetPasswordEmail(user) {
     const token = crypto.randomBytes(16).toString("hex");
-    const resetPasswordLink = `${hostUrl}/reset-password?token=${token}`;
+    const resetPasswordLink = `${this.hostUrl}/reset-password?token=${token}`;
 
-    redisDB.set(token, user.email, 1 * 60 * 60)
+    await redisDB.set(token, user.email, 1 * 60 * 60)
     const mailTemplate =
       `<body>
     <h1>Reset Password</h1>
@@ -68,14 +70,14 @@ class MailService {
       text: `Please reset your password by clicking the following link: ${resetPasswordLink}`,
       html: mailTemplate
     };
-    return this.transporter.sendMail(mailOptions, (err, result) => {
-      if (err) {
-        console.error("Error sending email:", err);
-        return Promise.reject(err);
-      }
-      console.log("Email sent:", result);
-      return Promise.resolve();
-    });
+    return new Promise((resolve, reject) => {
+      this.transporter.sendMail(mailOptions, async (err, result) => {
+        if (err) {
+          return reject(err)
+        }
+        return resolve(result);
+      });
+    })
   }
 }
 
