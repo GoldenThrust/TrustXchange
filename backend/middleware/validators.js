@@ -21,40 +21,41 @@ export function validate(validations) {
 import { check } from 'express-validator';
 
 export const requestForQuoteValidator = [
-    check('offering')
-        .isString().withMessage('Offering must be a string')
-        .notEmpty().withMessage('Offering is required'),
+  check('offering')
+    .notEmpty().withMessage('Offering is required')
+    .isJSON().withMessage('Offering must be a JSON object'),
 
-    check('amount')
-        .isNumeric().withMessage('Amount must be a number')
-        .isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
+  check('amount')
+    .notEmpty().withMessage('Amount is required')
+    .isNumeric().withMessage('Amount must be a number')
+    .isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
 
-    check('payinpaymentDetails')
-        .isString().withMessage('Pay-in Payment Details must be a string')
-        .notEmpty().withMessage('Pay-in Payment Details is required'),
+  check('payinPaymentDetails')
+    .notEmpty().withMessage('Pay-in Payment Details is required')
+    .isJSON().withMessage('Pay-in Payment Details must be a JSON object'),
 
-    check('payoutPaymentDetails')
-        .isString().withMessage('Payout Payment Details must be a string')
-        .notEmpty().withMessage('Payout Payment Details is required'),
+  check('payoutPaymentDetails')
+    .notEmpty().withMessage('Payout Payment Details is required')
+    .isJSON().withMessage('Payout Payment Details must be a JSON object'),
 
-    check('payinkind')
-        .isString().withMessage('Pay-in Kind must be a string')
-        .notEmpty().withMessage('Pay-in Kind is required'),
+  check('payinKind')
+    .notEmpty().withMessage('Pay-in Kind is required')
+    .isString().withMessage('Pay-in Kind must be a string'),
 
-    check('payoutKind')
-        .isString().withMessage('Payout Kind must be a string')
-        .notEmpty().withMessage('Payout Kind is required'),
+  check('payoutKind')
+    .notEmpty().withMessage('Payout Kind is required')
+    .isString().withMessage('Payout Kind must be a string'),
 ];
 
 
 export const quoteValidator = [
-    check('pfiDid')
-        .isString().withMessage('pfiDid must be a string')
-        .notEmpty().withMessage('pfiDid is required'),
+  check('pfiDid')
+    .notEmpty().withMessage('pfiDid is required')
+    .isString().withMessage('pfiDid must be a string'),
 
-    check('exchangeId')
-        .notEmpty().withMessage('exchangeId is required')
-        .isString().withMessage('exchangeId must be a string or a valid identifier'),
+  check('exchangeId')
+    .notEmpty().withMessage('exchangeId is required')
+    .isString().withMessage('exchangeId must be a string or a valid identifier'),
 ];
 
 
@@ -135,15 +136,15 @@ export const signupValidator = [
 
 export const offeringFilterValidator = [
   body('payinCurrencyCode')
-  .trim()
-  .notEmpty()
-  .withMessage("Please provide a payin currency code")
-  .isLength({ min: 3, max: 3 })
-  .withMessage("Payin currency code should be 3 characters long"),
+    .trim()
+    .notEmpty()
+    .withMessage("Please provide a payin currency code")
+    .isLength({ min: 3, max: 4 })
+    .withMessage("Payin currency code should be 3 characters long"),
   body('payoutCurrencyCode')
-  .trim()
-  .notEmpty()
-  .withMessage("Please provide a payout currency code")
-  .isLength({ min: 3, max: 3 })
-  .withMessage("Payout currency code should be 3 characters long"),
+    .trim()
+    .notEmpty()
+    .withMessage("Please provide a payout currency code")
+    .isLength({ min: 3, max: 4 })
+    .withMessage("Payout currency code should be 3 characters long"),
 ]

@@ -6,7 +6,7 @@ import { upload } from "../utils/constants.js";
 const authRoutes = Router();
 
 authRoutes.post('/register', upload.single('image'), validate(signupValidator), authContoller.register)
-authRoutes.post('/login', validate(loginValidator),authContoller.login)
+authRoutes.post('/login', validate(loginValidator), authContoller.login)
 authRoutes.get('/logout', verifyToken, authContoller.logout)
 authRoutes.get('/verify', verifyToken, authContoller.verify)
 authRoutes.get('/activate/:token', authContoller.activateAccount)

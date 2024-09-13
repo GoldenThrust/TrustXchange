@@ -3,5 +3,20 @@
 @tailwind utilities;
 
 :root {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  background-color: blue;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: indigo;
+  box-shadow: 0 0 5px indigo;
+  border-radius: 100%;
+}
+
+* {
+    overflow-x: hidden;   
 }

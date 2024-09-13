@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 export default function Form({ title, data, onSubmit, error }) {
     const formHook = useForm();
     const { handleSubmit } = formHook;
-    console.log(error)
+
     return (
         <form
             className="flex justify-center flex-col m-auto w-10/12 gap-8 my-32"

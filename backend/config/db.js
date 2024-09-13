@@ -62,6 +62,22 @@ class RedisClient {
   del(key) {
     return this.client.DEL(key);
   }
+
+  async hset(key, field, value) {
+    await this.client.HSET(key, field, value);
+  }
+
+  async hget(key, field) {
+    return this.client.HGET(key, field);
+  }
+
+  async hdel(key, field) {
+    return this.client.HDEL(key, field);
+  }
+
+  hgetall(key) {
+    return this.client.HGETALL(key);
+  }
 }
 
 export const redisDB = new RedisClient();

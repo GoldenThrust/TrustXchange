@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { useState } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useSelector } from "react-redux"
 
 const navigation = [
   { name: 'About Us', href: '#about-us' },
@@ -10,8 +11,12 @@ const navigation = [
   { name: 'Contact Us', href: '#contact-us' },
 ]
 
+
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
 
   return (
     <div className="bg-white">
@@ -19,7 +24,7 @@ export default function Home() {
         <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
           <div className="flex lg:flex-1">
             <a href="/" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
+              <span className="sr-only">TrustXchange</span>
               <img
                 alt="logo"
                 src="logo.svg"
@@ -45,8 +50,8 @@ export default function Home() {
             ))}
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <Link to="/login" className="text-sm font-semibold leading-6 text-gray-900">
-              Log in <span aria-hidden="true">&rarr;</span>
+            <Link to={isAuthenticated ? "/logout" : "/login"} className="text-sm font-semibold leading-6 text-gray-900">
+              {isAuthenticated ? "Log Out" : "Log in"} <span aria-hidden="true">&rarr;</span>
             </Link>
           </div>
         </nav>
@@ -86,10 +91,10 @@ export default function Home() {
                 </div>
                 <div className="py-6">
                   <Link
-                    to="/login"
+                    to={isAuthenticated ? "/logout" : "/login"}
                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
-                    Log in
+                    {isAuthenticated ? "Log Out" : "Log In"}
                   </Link>
                 </div>
               </div>
@@ -121,10 +126,10 @@ export default function Home() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
-                to="/signup"
+                to={ isAuthenticated ? "/dashboard" : "/signup"}
                 className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Get started
+                { isAuthenticated ? "Go to dashboard" : "Get started"}
               </Link>
               <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
                 Learn more <span aria-hidden="true">→</span>
@@ -228,6 +233,6 @@ export default function Home() {
           <p>&copy; 2024 TrustXchange. All rights reserved.</p>
         </div>
       </footer>
-    </div>
+    </div >
   );
 };

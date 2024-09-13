@@ -7,8 +7,7 @@ import Home from './pages/Home/Home.jsx'
 import Login from './pages/Authentication/Login.jsx'
 import './styles/index.css'
 import ErrorPage from "./404";
-import { useDispatch } from 'react-redux'
-import Status from './pages/status.jsx';
+import { useDispatch, useSelector } from 'react-redux'
 import SignUp from './pages/Authentication/SignUp.jsx';
 import Logout from './pages/Authentication/Logout.jsx';
 import ForgotPassword from './pages/Authentication/ForgotPassword.jsx';
@@ -18,6 +17,11 @@ import AccountActivate from './pages/Authentication/AccountActivation.jsx';
 import DashBoard from './pages/Dashboard/Dashboard.jsx';
 import { useEffect } from "react";
 import { verify } from "./auth/authActions.jsx";
+import { getPFIsOffering, getCurrencyCode, fetchTransactions } from "./messages/messageActions.jsx";
+import Status from "./pages/Status.jsx";
+import { getActiveQuotes } from "./messages/messageActions.jsx"
+import Transactions from "./pages/Transactions/Transactions.jsx";
+
 
 const router = createBrowserRouter([
     {
@@ -49,6 +53,10 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashBoard />
     }, {
+    }, {
+        path: "/transactions",
+        element: <Transactions />
+    }, {
         path: "/status",
         element: <Status />
     }
@@ -56,9 +64,23 @@ const router = createBrowserRouter([
 
 export default function App() {
     const dispatch = useDispatch()
+    const { isAuthenticated } = useSelector((state) => state.auth)
+
     useEffect(() => {
-        dispatch(verify())
-    }, [dispatch])
+        if (!isAuthenticated) {
+            dispatch(verify())
+        }
+    }, [dispatch, isAuthenticated]);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            dispatch(getActiveQuotes())
+            dispatch(getPFIsOffering())
+            dispatch(getCurrencyCode())
+            dispatch(fetchTransactions())
+        }
+    }, [dispatch, isAuthenticated]);
+
     return (
         <RouterProvider router={router} />
     )

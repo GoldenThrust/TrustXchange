@@ -10,7 +10,16 @@ import { redisDB } from "../config/db.js";
 class AuthenticationController {
     async verify(req, res) {
         try {
-            const { name, email, address, image, city, state, country, zip, did } = res.locals.user;
+            const user = await User.findById(res.locals.jwtData.id);
+            if (!user) {
+                return res.status(401).send({ "message": "User not registered OR Token malfunctioned" });
+            }
+
+            if (user._id.toString() !== res.locals.jwtData.id) {
+                return res.status(403).send("Permissions didn't match");
+            }
+
+            const { name, email, address, image, city, state, country, zip, did } = user;
 
             return res
                 .status(200)
@@ -100,7 +109,7 @@ class AuthenticationController {
                 path: "/",
             });
 
-            const token = createToken(user._id.toString(), user.email, "7d");
+            const token = createToken(user._id.toString(), user.email, user.did, "7d");
             const expires = new Date();
             expires.setDate(expires.getDate() + 7);
 
@@ -205,7 +214,7 @@ class AuthenticationController {
             path: "/",
         });
 
-        const token = createToken(user._id.toString(), user.email, "7d");
+        const token = createToken(user._id.toString(), user.email, user.did, "7d");
         const expires = new Date();
         expires.setDate(expires.getDate() + 7);
 

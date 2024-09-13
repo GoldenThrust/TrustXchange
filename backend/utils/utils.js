@@ -1,11 +1,11 @@
-function getSecondsRemaining(targetTime) {
-    const now = new Date();
-    const targetDate = new Date(targetTime);
+export function getSecondsRemaining(targetDateStr) {
+    const now = new Date().getTime();
+
+    const targetDate = new Date(targetDateStr).getTime();
 
     const timeDifference = targetDate - now;
 
-    const secondsRemaining = Math.floor(timeDifference / 1000);
+    const seconds = Math.floor(timeDifference / 1000);
 
-    return secondsRemaining;
+    return seconds > 0 ? seconds : 0;
 }
-

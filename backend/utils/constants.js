@@ -272,4 +272,4 @@ export const countryCode = {
   ZW: "Zimbabwe"
 };
 
-export const upload = multer({ dest: path.resolve(__dirname, '../upload') });
+export const upload = multer({ dest: './uploads'});

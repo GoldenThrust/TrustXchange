@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { COOKIE_NAME } from "../utils/constants.js";
 
-export function createToken(id, email, expiresIn) {
-  const payload = { id, email };
+export function createToken(id, email, did, expiresIn) {
+  const payload = { id, email, did };
   const jwtSecret = process.env.JWT_SECRET;
   const token = jwt.sign(payload, jwtSecret, {
     expiresIn,

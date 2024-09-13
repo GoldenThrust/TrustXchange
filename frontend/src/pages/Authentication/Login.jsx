@@ -29,13 +29,13 @@ export default function Login() {
   };
 
 
-  const { error } = useSelector((state) => state.auth);
+  const { loginerror } = useSelector((state) => state.auth);
 
 
   return (
     <>
       <Header />
-      <Form title="Sign In" data={formData} onSubmit={onSubmit} error={error} />
+      <Form title="Sign In" data={formData} onSubmit={onSubmit} error={loginerror} />
       <div className="flex justify-between m-auto w-10/12 my-10">
         <Link to="/forgot-password" className="text-indigo-600">
           Forgot password?
