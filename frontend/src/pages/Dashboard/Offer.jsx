@@ -33,8 +33,8 @@ export default function Offer() {
     return (
         <>
             <h3 className="mt-4 font-bold text-xl my-5 ">Offering</h3>
-            <div className="grid gap-3 grid-cols-1 xl:grid-cols-2 w-full justify-between
-                        h-80 sm:h-auto sm:border-hidden border-solid border-2 border-indigo-400 rounded-lg sm:shadow-none shadow-xl
+            <div className="grid gap-3 grid-cols-1 xl:grid-cols-2
+                        max-h-80 sm:h-auto sm:border-hidden border-solid border-2 border-indigo-400 rounded-lg sm:shadow-none shadow-xl
                         overflow-x-hidden  
                         sm:overflow-x-visible">
                 {pfiOfferingsData && Object.keys(pfiOfferingsData).length ? (
@@ -47,7 +47,7 @@ export default function Offer() {
                                     key={offering.metadata.id}
                                     id={offering.metadata.id}
                                     onClick={getOfferingId(offering.metadata.id)}
-                                    className={`bg-indigo-500 p-2 text-zinc-50 rounded-lg  h-20 flex flex-col place-content-center ${isSelected ? 'border border-red-600 bg-slate-600 animate-bounce' : ''}`}
+                                    className={`bg-indigo-500 p-2 text-zinc-50 rounded-lg h-20 flex flex-col place-content-center ${isSelected ? 'border border-red-600 bg-slate-600 animate-bounce' : ''}`}
                                 >
                                     <div className="flex justify-between">
                                         <span className="text-sm font-bold">{pfiName}</span>

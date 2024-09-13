@@ -40,50 +40,46 @@ export default function PaymentDetailsForm({ data, error }) {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="bg-white shadow-md rounded-lg p-8 grid grid-cols-1 sm:grid-cols-2 gap-6"
+            className="space-y-5 bg-white shadow-md rounded-lg p-8 gap-6"
         >
-            <div className="sm:col-span-2">
-                <FormField data={data?.[2] || []} hook={formHook} />
-            </div>
+            <FormField data={data?.[2] || []} hook={formHook} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {data?.[0]?.length !== 0 && (
+                    <div>
+                        <span>
+                            <div className="text-lg font-semibold text-gray-700 mb-2">
+                                Payment Details
+                            </div>
+                            <FormField data={data?.[0] || []} hook={formHook} />
+                        </span>
+                    </div>
+                )}
 
-            {data?.[0]?.length !== 0 && (
-                <div>
-                    <span>
-                        <div className="text-lg font-semibold text-gray-700 mb-2">
-                            Payment Details
-                        </div>
-                        <FormField data={data?.[0] || []} hook={formHook} />
-                    </span>
-                </div>
-            )}
 
-            <div>
-                <span>
-                    {data?.[1]?.length !== 0 && (
-                        <div className="text-lg font-semibold text-gray-700 mb-2">
-                            {"Recipient's Payment Details"}
-                        </div>
-                    )}
-                    <FormField data={data?.[1] || []} hook={formHook} />
-                </span>
+                {data?.[1]?.length !== 0 && (
+                    <div>
+                        <span>
+                            <div className="text-lg font-semibold text-gray-700 mb-2">
+                                {"Recipient's Payment Details"}
+                            </div>
+                            <FormField data={data?.[1] || []} hook={formHook} />
+                        </span>
+                    </div>
+                )}
             </div>
-            <span className="col-span-2">
-                <p>{`Estimated Pay Out Time: ${formattedTime(paymentsDetails.estimatedSettlementTime)}`}</p>
-            </span>
+            <p>{`Estimated Pay Out Time: ${formattedTime(paymentsDetails.estimatedSettlementTime)}`}</p>
             {error && (
                 <p role="alert" className="text-red-500 sm:col-span-2">
                     {error}
                 </p>
             )}
 
-            <div className="sm:col-span-2">
-                <input
-                    type="submit"
-                    value="Request For Quote"
-                    className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-md shadow-sm 
+            <input
+                type="submit"
+                value="Request For Quote"
+                className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-md shadow-sm 
                     hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-indigo-300 disabled:bg-gray-400"
-                />
-            </div>
+            />
         </form>
     );
 }
