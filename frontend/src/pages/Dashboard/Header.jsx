@@ -27,7 +27,7 @@ export default function Headers() {
             </a>
             <div className="flex flex-row place-items-center gap-2 sm:gap:10">
                 <Link to='/transactions' className="text-nowrap hover:text-orange-600 border-solid border-y-2">Transactions History</Link>
-                <Link to='/profile'>
+                <Link to='#'>
                     <img
                         ref={profileImage}
                         alt="profile"
