@@ -1,6 +1,5 @@
 import Headers from "./Header"
 import { useNavigate } from "react-router-dom"
-import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PaymentCurrency from "./paymentCurrency";
@@ -20,27 +19,6 @@ export default function DashBoard() {
 
     const { isAuthenticated } = useSelector((state) => state.auth)
     const navigate = useNavigate();
-
-
-    const socket = io("http://localhost:3000", {
-        withCredentials: true,
-    });
-
-    useEffect(() => {
-        socket.on("connect", () => {
-            console.log("Connected to the server");
-        });
-        socket.on("disconnect", () => {
-            console.log("Disconnected from the server");
-        });
-        socket.on("order-status", (message) => {
-            console.log(`New message received: ${JSON.stringify(message)}`);
-        });
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [socket]);
 
     useEffect(() => {
         if (!isAuthenticated) {

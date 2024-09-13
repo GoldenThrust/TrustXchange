@@ -8,6 +8,7 @@ export default function Quote() {
 
     const showQuote = (event) => {
         dispatch(selectQuotes(Object.values(activeQuotes).filter((quote) => quote.metadata.id === event.currentTarget.id)));
+        event.currentTarget.style.display = 'none';
     }
 
     return (

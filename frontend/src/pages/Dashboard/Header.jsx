@@ -10,7 +10,8 @@ export default function Headers() {
 
     useEffect(() => {
         if (user) {
-            profileImage.current.src = `http://localhost:3000/${user.image}`
+            // profileImage.current.src = `http://localhost:3000/${user.image}`
+            profileImage.current.src = `./${user.image}`
         }
     }, [user, pfiOfferings])
 

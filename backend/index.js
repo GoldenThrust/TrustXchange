@@ -3,7 +3,6 @@ import { createServer } from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { mongoDB, redisDB } from "./config/db.js";
-import { Server } from "socket.io";
 import "dotenv/config"
 
 import { SitemapStream, streamToPromise } from "sitemap";
@@ -14,8 +13,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import messengerRoute from "./routes/messenger.js";
-import socketcookieParser from "./middleware/socketCookieParser.js";
-import authenticateToken from "./middleware/socketTokenManager.js";
 import { TbdexHttpClient } from "@tbdex/http-client";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -83,55 +80,6 @@ app.get('*', (req, res) => {
 });
 
 
-const io = new Server(server, {
-  cors: {
-    origin: [allowOrigin],
-    credentials: true,
-  },
-});
-
-io.use(socketcookieParser)
-io.use(authenticateToken)
-
-
-io.on("connection", async (socket) => {
-  const order = await redisDB.get(`order_${socket.user.id}`);
-
-  if (order) {
-    const cacheOrder = JSON.parse(order)
-    cacheOrder.forEach(order => {
-      // let close;
-  //         let status;
-  //         const exchange = await TbdexHttpClient.getExchange({
-  //             pfiDid: pfiDid,
-  //             did: resolveDid,
-  //             exchangeId: order.exchangeId
-
-  //         });
-
-  //         for (const message of exchange) {
-  //             if (message instanceof OrderStatus) {
-  //                 status = message.data.orderStatus;
-  //             }
-  //             else if (message instanceof Close) {
-  //                 close = message;
-  //                 break;
-  //             }
-  //         }
-  // })
-    // })
-      
-    });
-    socket.emit("order-status", cacheOrder);
-  }
-  // Object.entries(quotes).forEach(([key, value]) => {
-  //     quotes[key] = JSON.parse(value);
-  //     if (!getSecondsRemaining(quotes[key].data.expiresAt)) {
-  //         redisDB.hdel(user._id.toString(), key);
-  //     }
-
-  //     
-})
 
 server.listen(PORT, () => {
   if (process.env.NODE_ENV === "development") {

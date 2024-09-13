@@ -424,13 +424,11 @@ class MessageController {
     }
 
     async getTransactions(req, res) {
-        const { page, limit } = req.query;
-
-        if (!page || !limit) {
-            return res.status(400).json({ status: "ERROR", message: "Page and limit are required" });
-        }
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+    
         const skip = (page - 1) * limit;
-
+    
         const user = await User.findById(res.locals.jwtData.id);
         if (!user) {
             return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
@@ -438,20 +436,20 @@ class MessageController {
         if (!user.active) {
             return res.status(403).json({ status: "ERROR", message: "Account is not active" });
         }
-
+    
         const transactions = await Transactions.find({ user: user._id })
             .sort({ createdAt: -1 })
-            .limit(Number(limit))
-            .skip(Number(skip));
-
+            .limit(limit)
+            .skip(skip);
+    
         const totalTransactions = await Transactions.countDocuments({ user: user._id });
-
+    
         return res.status(200).json({
             transactions,
-            totalPages: Math.ceil(totalTransactions / limit),
-            currentPage: Number(page)
+            totalTransactions, 
+            currentPage: page
         });
-    }
+    }    
 }
 
 const messageController = new MessageController();

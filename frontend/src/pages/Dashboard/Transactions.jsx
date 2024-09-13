@@ -19,7 +19,7 @@ export default function Transactions() {
     return (
         <>
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Transactions</h2>
-            <div className="grid gap-2 grid-cols-1 lg:grid-cols-2">
+            <div className="grid gap-2 grid-cols-1 xl:grid-cols-2">
                 {memoisedTransaction.map((transaction) => (
                     <div key={transaction.quote.metadata.exchangeId} className="quote flex h-24 bg-slate-900 text-teal-50 justify-between flex-col rounded-2xl p-2">
                         <div className="flex justify-between">
