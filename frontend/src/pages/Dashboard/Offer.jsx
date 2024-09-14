@@ -47,7 +47,7 @@ export default function Offer() {
                                     key={offering.metadata.id}
                                     id={offering.metadata.id}
                                     onClick={getOfferingId(offering.metadata.id)}
-                                    className={`bg-indigo-500 p-2 text-zinc-50 rounded-lg h-20 flex flex-col place-content-center ${isSelected ? 'border border-red-600 bg-slate-600 animate-bounce' : ''}`}
+                                    className={`p-2 text-zinc-50 rounded-lg h-20 flex flex-col place-content-center ${offering.verificationFailed ? 'bg-red-500' : 'bg-indigo-500'} ${isSelected ? 'border border-green-600 shadow-md bg-violet-600 animate-bounce' : ''}`}
                                 >
                                     <div className="flex justify-between">
                                         <span className="text-sm font-bold">{pfiName}</span>
