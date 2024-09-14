@@ -37,7 +37,6 @@ export default function Offer() {
                         max-h-80 sm:h-auto sm:border-hidden border-solid border-2 border-indigo-400 rounded-lg sm:shadow-none shadow-xl
                         overflow-x-hidden  
                         sm:overflow-x-visible">
-                            {console.log(filtering)}
                 {pfiOfferingsData && Object.keys(pfiOfferingsData).length ? (
                     Object.entries(pfiOfferingsData).map(([pfiName, offerings]) =>
                         offerings.map((offering) => {

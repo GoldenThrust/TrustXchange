@@ -17,9 +17,8 @@ import AccountActivate from './pages/Authentication/AccountActivation.jsx';
 import DashBoard from './pages/Dashboard/Dashboard.jsx';
 import { useEffect } from "react";
 import { verify } from "./auth/authActions.jsx";
-import { getPFIsOffering, fetchTransactions } from "./messages/messageActions.jsx";
+import { getPFIsOffering, fetchTransactions, getActiveQuotes } from "./messages/messageActions.jsx";
 import Status from "./pages/Status.jsx";
-import { getActiveQuotes } from "./messages/messageActions.jsx"
 import Transactions from "./pages/Transactions/Transactions.jsx";
 import PFIStat from "./pages/PFIStat/PFIStat.jsx";
 

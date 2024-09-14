@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { accountActivation } from '../../auth/authActions.jsx';
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getPFIsOffering, fetchTransactions, getActiveQuotes } from "../../messages/messageActions.jsx";
 
 export default function AccountActivate() {
     const dispatch = useDispatch();
@@ -15,12 +16,16 @@ export default function AccountActivate() {
 
     useEffect(() => {
         if (isAuthenticated) {
+            dispatch(getActiveQuotes())
+            dispatch(getPFIsOffering())
+            dispatch(fetchTransactions())
             const timer = setTimeout(() => {
                 navigate('/dashboard', { replace: true });
             }, 1000);
+
             return () => clearTimeout(timer);
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, dispatch]);
 
     useEffect(() => {
         if (token) {
