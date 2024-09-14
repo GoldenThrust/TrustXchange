@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import axios from 'axios';
-import { Header } from '../Authentication/header';
+import { Header } from '../Authentication/header.jsx';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

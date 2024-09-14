@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import axios from 'axios'
 import { Toaster } from "react-hot-toast";
-import store from './store/store'
+import store from './store/store.jsx'
 import { Provider } from 'react-redux'
 import App from './App';
 

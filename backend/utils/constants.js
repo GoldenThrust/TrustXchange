@@ -7,7 +7,7 @@ export const COOKIE_NAME = "auth_token";
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
-export const Dev = process.env.DEV === "TRUE" ? false : true;
+export const Dev = process.env.DEV === "TRUE" ? true : false;
 
 export const hostUrl = process.env.HOST_URL
 

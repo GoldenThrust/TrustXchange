@@ -1,6 +1,6 @@
-import { Header } from './header';
+import { Header } from './header.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { accountActivation } from '../../auth/authActions';
+import { accountActivation } from '../../auth/authActions.jsx';
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 

@@ -1,15 +1,15 @@
-import Headers from "./Header"
+import Headers from "./Header.jsx"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import PaymentCurrency from "./paymentCurrency";
-import PaymentKindsForm from "./paymentKind";
-import { formatWord } from "../../utils/functions";
-import PaymentDetailsForm from "./PaymentDetails";
-import Quote from "./Quote";
-import Transactions from "./Transactions";
-import Offer from "./Offer";
-import QuoteDialog from "./QuoteDialog";
+import PaymentCurrency from "./paymentCurrency.jsx";
+import PaymentKindsForm from "./paymentKind.jsx";
+import { formatWord } from "../../utils/functions.jsx";
+import PaymentDetailsForm from "./PaymentDetails.jsx";
+import Quote from "./Quote.jsx";
+import Transactions from "./Transactions.jsx";
+import Offer from "./Offer.jsx";
+import QuoteDialog from "./QuoteDialog.jsx";
 
 
 export default function DashBoard() {

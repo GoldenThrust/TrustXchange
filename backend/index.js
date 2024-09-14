@@ -72,7 +72,6 @@ app.get("/sitemap.xml", function (req, res) {
 })
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
-console.log(path.join(__dirname, '/uploads'))
 app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
 
 app.get('*', (req, res) => {

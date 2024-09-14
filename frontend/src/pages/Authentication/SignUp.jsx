@@ -1,10 +1,10 @@
-import { Header } from "./header";
+import { Header } from "./header.jsx";
 import { useForm } from "react-hook-form";
-import { countryCode } from "../../utils/constant";
+import { countryCode } from "../../utils/constant.jsx";
 import { useDispatch, useSelector } from 'react-redux';
-import { signup } from '../../auth/authActions';
+import { signup } from '../../auth/authActions.jsx';
 import { useEffect, useState } from "react";
-import FormField from "../../components/FormField";
+import FormField from "../../components/FormField.jsx";
 import { Link, useNavigate } from "react-router-dom";
 
 

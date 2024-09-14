@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Header } from './header';
+import { Header } from './header.jsx';
 import { useEffect } from 'react';
-import { logoutAction } from '../../auth/authActions';
+import { logoutAction } from '../../auth/authActions.jsx';
 import { useNavigate } from 'react-router-dom';
 
 export default function Logout() {

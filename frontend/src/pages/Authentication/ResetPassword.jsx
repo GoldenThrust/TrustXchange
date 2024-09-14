@@ -1,7 +1,7 @@
-import { Header } from "./header";
+import { Header } from "./header.jsx";
 import { useDispatch, useSelector } from 'react-redux';
-import { resetPassword } from '../../auth/authActions';
-import Form from "../../components/Form";
+import { resetPassword } from '../../auth/authActions.jsx';
+import Form from "../../components/Form.jsx";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 

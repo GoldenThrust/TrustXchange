@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Pagination from './Pagination';
-import TransactionTable from './TransactionTable';
-import { Header } from '../Authentication/header';
+import Pagination from './Pagination.jsx';
+import TransactionTable from './TransactionTable.jsx';
+import { Header } from '../Authentication/header.jsx';
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);

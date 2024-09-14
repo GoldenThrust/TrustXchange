@@ -1,8 +1,8 @@
-import FormField from "../../components/FormField";
+import FormField from "../../components/FormField.jsx";
 import { useForm } from "react-hook-form";
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from "react-redux";
-import { selectPaymentsDetails } from "../../messages/messageActions";
+import { selectPaymentsDetails } from "../../messages/messageActions.jsx";
 
 export default function PaymentKindsForm({ data, error }) {
     const formHook = useForm();

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit } from "./messageSlice";
+import { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit } from "./messageSlice.jsx";
 import toast from "react-hot-toast";
 
 export const getPFIsOffering = (data) => async (dispatch) => {
