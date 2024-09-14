@@ -82,7 +82,7 @@ app.get('*', (req, res) => {
 
 
 server.listen(PORT, () => {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.DEV === "TRUE") {
     console.log("Running on Development");
   }
 
