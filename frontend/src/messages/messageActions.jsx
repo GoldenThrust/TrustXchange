@@ -1,29 +1,17 @@
 import axios from "axios";
-import { pfiOfferings, filterOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions } from "./messageSlice";
+import { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit } from "./messageSlice";
 import toast from "react-hot-toast";
 
-export const getPFIsOffering = () => async (dispatch) => {
-    const res = await axios.get('xchange/offerings');
-    dispatch(pfiOfferings(res.data));
-    dispatch(pfiOfferings(res.data));
-}
-
-export const getCurrencyCode = () => async (dispatch) => {
-    try {
-        const res = await axios.get('xchange/currency-code');
-        dispatch(paymentsCurrency(res.data));
-    } catch (e) {
-        console.error(e);
+export const getPFIsOffering = (data) => async (dispatch) => {
+    let res = null;
+    if (data) {
+        res = await axios.post('xchange/offerings', data)
+    } else {
+        res = await axios.get('xchange/offerings')
     }
-}
-
-export const filterOffer = (data) => async (dispatch) => {
-    try {
-        const res = await axios.post('xchange/filter-offerings', data);
-        dispatch(filterOfferings(res.data));
-    } catch (e) {
-        console.error(e);
-    }
+    dispatch(pfiOfferings(res.data.offerings));
+    dispatch(paymentsCurrency(res.data.paymentsCurrency))
+    dispatch(setPaymentUnit(res.data.paymentUnit))
 }
 
 export const selectedOffer = (data) => async (dispatch) => {
@@ -64,7 +52,8 @@ export const selectPaymentsDetails = (data) => (dispatch) => {
 export const requestForQuote = (data) => async (dispatch) => {
     try {
         dispatch(selectPaymentsDetails(null));
-        toast.loading('Requesting for a quote...', { id: 'quote' });
+        dispatch(paymentKinds(null))
+        toast.loading('Requesting quote...', { id: 'quote' });
 
         await axios.post('xchange/request-quote', data);
 
@@ -72,7 +61,7 @@ export const requestForQuote = (data) => async (dispatch) => {
         toast.success('Quote received successfully', { id: 'quote' });
     } catch (error) {
         console.error(error);
-        toast.error('Failed to get quote', { id: 'quote' });
+        toast.error('Failed to request quote', { id: 'quote' });
     }
 }
 
@@ -88,7 +77,7 @@ export const getActiveQuotes = () => async (dispatch) => {
 
 export const fetchTransactions = () => async (dispatch) => {
     try {
-        const res = await axios.get('xchange/transactions?page=1&limit=5');
+        const res = await axios.get('xchange/transactions?page=1&limit=10');
         dispatch(setRecentTransctions(res.data.transactions));
     } catch (error) {
         console.error("Error fetching transactions:", error);
@@ -105,12 +94,12 @@ export const acceptQuotes = (data) => async (dispatch) => {
         dispatch(selectQuotes(null));
         toast.loading('Processing transaction...', { id: 'accept-quote' });
         await axios.post('xchange/accept-quote', data);
-        toast.success('Transaction complete', { id: 'accept-quote' });
+        toast.success('Transaction completed successfully', { id: 'accept-quote' });
         dispatch(getActiveQuotes());
         dispatch(fetchTransactions())
     } catch (error) {
         console.error(error);
-        toast.error('Failed to process quote', { id: 'accept-quote' });
+        toast.error('Failed to process transaction', { id: 'accept-quote' });
     }
 }
 
@@ -118,13 +107,13 @@ export const closeQuotes = (data) => async (dispatch) => {
     try {
         dispatch(selectPaymentsDetails(null));
         dispatch(selectQuotes(null));
-        toast.loading('Closing transaction...', { id: 'accept-quote' });
+        toast.loading('Closing transaction...', { id: 'close-quote' });
         await axios.post('xchange/close-quote', data);
-        toast.success('Transaction closed', { id: 'close-quote' });
+        toast.success('Transaction closed successfully', { id: 'close-quote' });
         dispatch(getActiveQuotes());
         dispatch(fetchTransactions())
     } catch (error) {
         console.error(error);
-        toast.error('Something went wrong', { id: 'close-quote' });
+        toast.error('Failed to close transaction', { id: 'close-quote' });
     }
 }

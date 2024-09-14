@@ -11,12 +11,14 @@ import Transactions from "./Transactions";
 import Offer from "./Offer";
 import QuoteDialog from "./QuoteDialog";
 
+
 export default function DashBoard() {
-    const { paymentsCurrency, filterOfferings, PaymentsKinds, selectedPaymentsKind, paymentsDetails } = useSelector((state) => state.xchange);
+    const { paymentsCurrency, PaymentsKinds, selectedPaymentsKind, paymentsDetails } = useSelector((state) => state.xchange);
     const [transactionCurrency, setTransactionCurrency] = useState([]);
     const [transactionKind, setTransactionKind] = useState([]);
     const [paymentDetails, selectPaymentsDetails] = useState([]);
-
+    
+    const { paymentUnit } = useSelector((state)=> state.xchange)
     const { isAuthenticated } = useSelector((state) => state.auth)
     const navigate = useNavigate();
 
@@ -29,7 +31,9 @@ export default function DashBoard() {
     useEffect(() => {
         setTransactionCurrency([
             { register: 'payinCurrencyCode', label: 'From Currency', type: 'select', options: paymentsCurrency?.payIn || [] },
-            { register: 'payoutCurrencyCode', label: 'To Currency', type: 'select', options: paymentsCurrency?.payOut || [] }
+            { register: 'payoutCurrencyCode', label: 'To Currency', type: 'select', options: paymentsCurrency?.payOut || [] },
+            { register: 'minUnit', label: 'Min Payout', type: 'text', placeholder: `Min: ${paymentUnit?.minPaymentUnit}`},
+            { register: 'maxUnit', label: 'Max Payout', type: 'text',  placeholder: `Max: ${paymentUnit?.maxPaymentUnit}` },
         ]);
 
 
@@ -67,7 +71,7 @@ export default function DashBoard() {
 
 
 
-    }, [paymentsCurrency, filterOfferings, PaymentsKinds, paymentsDetails]);
+    }, [paymentsCurrency,  PaymentsKinds, paymentsDetails, paymentUnit]);
 
 
     return (

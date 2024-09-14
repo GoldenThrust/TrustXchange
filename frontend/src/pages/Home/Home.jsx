@@ -9,6 +9,7 @@ const navigation = [
   { name: 'About Us', href: '#about-us' },
   { name: 'Features', href: '#features' },
   { name: 'Contact Us', href: '#contact-us' },
+  { name: 'PFIs Stats', href: '/pfistat' },
 ]
 
 

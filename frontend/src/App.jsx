@@ -17,10 +17,11 @@ import AccountActivate from './pages/Authentication/AccountActivation.jsx';
 import DashBoard from './pages/Dashboard/Dashboard.jsx';
 import { useEffect } from "react";
 import { verify } from "./auth/authActions.jsx";
-import { getPFIsOffering, getCurrencyCode, fetchTransactions } from "./messages/messageActions.jsx";
+import { getPFIsOffering, fetchTransactions } from "./messages/messageActions.jsx";
 import Status from "./pages/Status.jsx";
 import { getActiveQuotes } from "./messages/messageActions.jsx"
 import Transactions from "./pages/Transactions/Transactions.jsx";
+import PFIStat from "./pages/PFIStat/PFIStat.jsx";
 
 
 const router = createBrowserRouter([
@@ -57,6 +58,9 @@ const router = createBrowserRouter([
         path: "/transactions",
         element: <Transactions />
     }, {
+        path: "/pfistat",
+        element: <PFIStat />
+    }, {
         path: "/status",
         element: <Status />
     }
@@ -76,7 +80,6 @@ export default function App() {
         if (!isAuthenticated) {
             dispatch(getActiveQuotes())
             dispatch(getPFIsOffering())
-            dispatch(getCurrencyCode())
             dispatch(fetchTransactions())
         }
     }, [dispatch, isAuthenticated]);

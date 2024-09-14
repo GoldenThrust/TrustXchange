@@ -21,7 +21,7 @@ export default function Transactions() {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Transactions</h2>
             <div className="grid gap-2 grid-cols-1 xl:grid-cols-2">
                 {memoisedTransaction.map((transaction) => (
-                    <div key={transaction.quote.metadata.exchangeId} className="quote flex h-24 bg-slate-900 text-teal-50 justify-between flex-col rounded-2xl p-2">
+                    <div key={transaction.quote.metadata.exchangeId} className="quote flex h-24 bg-blue-400 text-teal-50 justify-between flex-col rounded-2xl p-2">
                         <div className="flex justify-between">
                             <div>
                                 <div className="font-semibold">{transaction.quote.pfiName}</div>
@@ -32,7 +32,7 @@ export default function Transactions() {
                             </div>
                         </div>
                         <div className="flex justify-between font-mono">
-                            <span>{transaction.quote.data.payin.amount}{transaction.quote.data.payin.currencyCode} {'->'} {transaction.quote.data.payout.amount}{transaction.quote.data.payout.currencyCode}</span>
+                            <span>{Math.floor(transaction.quote.data.payin.amount)}{transaction.quote.data.payin.currencyCode} {'->'} {Math.floor(transaction.quote.data.payout.amount)}{transaction.quote.data.payout.currencyCode}</span>
                             <span>Status: {transaction.status}</span>
                         </div>
                     </div>

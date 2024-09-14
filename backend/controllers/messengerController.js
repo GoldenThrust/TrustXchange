@@ -35,10 +35,10 @@ class MessageController {
 
         return response;
     }
-
     async getOfferings(req, res) {
         try {
             const user = await User.findById(res.locals.jwtData.id);
+            const { payinCurrencyCode, payoutCurrencyCode, minUnit, maxUnit } = req.body;
 
             if (!user) {
                 return res.status(401).json({
@@ -58,8 +58,27 @@ class MessageController {
             const { vc } = user;
             const offeringsData = await this.fetchAllOfferings();
 
+            let minPaymentUnit = 0;
+            let maxPaymentUnit = -Infinity;
+            const payIn = new Set();
+            const payOut = new Set();
+
             Object.entries(offeringsData).forEach(([key, offerings]) => {
                 offerings.forEach((offering) => {
+                    const payoutUnitsPerPayinUnit = offering.data.payoutUnitsPerPayinUnit;
+
+                    payIn.add(offering.data.payin.currencyCode);
+                    maxPaymentUnit = Math.max(maxPaymentUnit, payoutUnitsPerPayinUnit);
+
+                    if (payinCurrencyCode && offering.data.payin.currencyCode !== payinCurrencyCode) return;
+                    payOut.add(offering.data.payout.currencyCode);
+                    
+                    if (payoutCurrencyCode && offering.data.payout.currencyCode !== payoutCurrencyCode) return;
+                    if (minUnit && payoutUnitsPerPayinUnit < minUnit) return;
+                    minPaymentUnit = Math.min(minPaymentUnit, payoutUnitsPerPayinUnit);
+                    
+                    if (maxUnit && payoutUnitsPerPayinUnit > maxUnit) return;
+
                     try {
                         PresentationExchange.satisfiesPresentationDefinition({
                             vcJwts: vc,
@@ -69,19 +88,23 @@ class MessageController {
                         if (!response[key]) response[key] = [];
                         response[key].push({ ...offering, verificationFailed: false });
                     } catch (e) {
+                        console.error(`Verification failed for offering ${offering.id}:`, e);
                         if (!response[key]) response[key] = [];
                         response[key].push({ ...offering, verificationFailed: true });
                     }
                 });
             });
 
-            return res.json(response);
-        } catch (error) {
-            console.error("Failed to filter offerings:", error);
-            return res.status(500).json({
-                status: "ERROR",
-                message: "Failed to filter offerings",
+            res.json({
+                status: "SUCCESS", offerings: response, paymentUnit: {
+                    minPaymentUnit, maxPaymentUnit
+                }, paymentsCurrency: {
+                    payIn: Array.from(payIn), payOut: Array.from(payOut)
+                }
             });
+        } catch (error) {
+            console.error('Error fetching offerings:', error);
+            res.status(500).json({ status: "ERROR", message: "Internal server error" });
         }
     }
 
@@ -157,7 +180,6 @@ class MessageController {
         }
     }
 
-
     async requestForQuote(req, res) {
         try {
             const { amount, payinKind, payoutKind } = req.body;
@@ -192,7 +214,7 @@ class MessageController {
                     offeringId: offering.metadata.id,
                     payin: {
                         kind: payinKind,
-                        amount: amount,
+                        amount: String(Number(amount) - (Number(amount) * 0.03)),
                         paymentDetails: payinPaymentDetails,
                     },
                     payout: {
@@ -311,6 +333,8 @@ class MessageController {
                 return res.status(404).json({ status: "ERROR", message: "Quote not found" });
             }
 
+            quote.privateData = {};
+
             await Transactions.create({ user, quote, transaction: close, status: 'CLOSED', exchangeId, pfiName: quote.pfiName });
             redisDB.hdel(user._id.toString(), exchangeId)
             res.status(200).json({ ...close, status: "OK" })
@@ -386,6 +410,8 @@ class MessageController {
                 return res.status(404).json({ status: "ERROR", message: "Quote not found" });
             }
 
+            quote.privateData = {};
+
             await Transactions.create({ user, quote, transaction: close || {}, status, exchangeId, pfiName: quote.pfiName });
             redisDB.hdel(user._id.toString(), exchangeId)
 
@@ -426,9 +452,9 @@ class MessageController {
     async getTransactions(req, res) {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
-    
+
         const skip = (page - 1) * limit;
-    
+
         const user = await User.findById(res.locals.jwtData.id);
         if (!user) {
             return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
@@ -436,20 +462,68 @@ class MessageController {
         if (!user.active) {
             return res.status(403).json({ status: "ERROR", message: "Account is not active" });
         }
-    
+
         const transactions = await Transactions.find({ user: user._id })
             .sort({ createdAt: -1 })
             .limit(limit)
             .skip(skip);
-    
+
         const totalTransactions = await Transactions.countDocuments({ user: user._id });
-    
+
         return res.status(200).json({
             transactions,
-            totalTransactions, 
+            totalTransactions,
             currentPage: page
         });
-    }    
+    }
+    async getAllPFIStats(req, res) {
+        try {
+            const pfiStats = await Transactions.aggregate([
+                {
+                    $group: {
+                        _id: "$pfiName",
+                        totalTransactions: { $sum: 1 },
+                        canceledTransactions: {
+                            $sum: { $cond: [{ $eq: ["$status", "CLOSED"] }, 1, 0] }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        totalTransactions: 1,
+                        canceledTransactions: 1,
+                        successRate: {
+                            $cond: [
+                                { $gt: ["$totalTransactions", 0] },
+                                { $multiply: [{ $divide: [{ $subtract: ["$totalTransactions", "$canceledTransactions"] }, "$totalTransactions"] }, 100] },
+                                0
+                            ]
+                        },
+                        cancellationRate: {
+                            $cond: [
+                                { $gt: ["$totalTransactions", 0] },
+                                { $multiply: [{ $divide: ["$canceledTransactions", "$totalTransactions"] }, 100] },
+                                0
+                            ]
+                        }
+                    }
+                }
+            ]);
+
+            return res.status(200).json(pfiStats.map(pfi => ({
+                pfiName: pfi._id,
+                totalTransactions: pfi.totalTransactions,
+                canceledTransactions: pfi.canceledTransactions,
+                successRate: pfi.successRate.toFixed(2),
+                cancellationRate: pfi.cancellationRate.toFixed(2)
+            })))
+        } catch (error) {
+            console.error('Error fetching PFI stats:', error);
+            res.status(500).json(error);
+        }
+    }
+
 }
 
 const messageController = new MessageController();

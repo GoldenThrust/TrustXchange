@@ -24,7 +24,8 @@ class MailService {
 
     const mailTemplate =
       `<body>
-    <h1>Verify Your Email</h1>
+      <h1>TrustXchange</h1>
+    <h2>Verify Your Email</h2>
     <p>Click the link below to verify your email:</p>
     <a href="${verificationLink}">Verify Email</a>
     <p>This link will expire in 24 hours.</p>
@@ -58,7 +59,8 @@ class MailService {
     await redisDB.set(token, user.email, 1 * 60 * 60)
     const mailTemplate =
       `<body>
-    <h1>Reset Password</h1>
+      <h1>TrustXchange</h1>
+    <h2>Reset Password</h2>
     <p>Click the link below to reset your password:</p>
     <a href="${resetPasswordLink}">Reset Password</a>
     <p>This link will expire in 1 hour.</p>

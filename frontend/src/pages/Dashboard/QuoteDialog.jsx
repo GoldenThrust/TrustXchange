@@ -34,7 +34,7 @@ export default function QuoteDialog() {
         <>
             {quote?.length > 0 && quote.map((val, index) => (
                 <div key={index} className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center h-screen">
-                    <aside className="absolute top-1/2 left-1/2 w-5/6 h-5/6 bg-gray-300" style={{ transform: 'translate(-50%, -50%)' }}>
+                    <aside className="absolute  overflow-y-auto overflow-hidden top-1/2 left-1/2 w-5/6 h-5/6 bg-gray-300" style={{ transform: 'translate(-50%, -50%)' }}>
                         <div className="p-10 flex gap-4 flex-col">
                             <div className="flex flex-col sm:flex-row justify-between place-items-center">
                                 <span className="flex flex-row place-items-center gap-2">
@@ -77,6 +77,11 @@ export default function QuoteDialog() {
                                     </div>
                                 </div>
                             </div>
+                            <div className="bg-blue-100 border border-blue-300 text-blue-800 px-4 py-2 rounded-md shadow-md">
+                                <p className="font-semibold">A 3% transaction fee has been applied.</p>
+                            </div>
+
+
                             <div className="flex gap-5 flex-col sm:flex-row">
                                 <button
                                     type="button"

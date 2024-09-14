@@ -5,10 +5,10 @@ import TransactionTable from './TransactionTable';
 import { Header } from '../Authentication/header';
 
 export default function Transactions() {
-    const [transactions, setTransactions] = useState([]);  // Holds transaction data
-    const [currentPage, setCurrentPage] = useState(1);      // Holds the current page
-    const [transactionsPerPage] = useState(10);              // Number of transactions per page
-    const [totalTransactions, setTotalTransactions] = useState(0);  // Total number of transactions
+    const [transactions, setTransactions] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [transactionsPerPage] = useState(10); 
+    const [totalTransactions, setTotalTransactions] = useState(0); 
 
     useEffect(() => {
         const fetchTransactions = async () => {

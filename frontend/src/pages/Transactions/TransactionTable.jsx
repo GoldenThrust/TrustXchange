@@ -21,9 +21,9 @@ export default function TransactionTable({ transactions }) {
               <td className="py-2 px-4">{transaction.quote.pfiName}</td>
               <td className="py-2 px-4  hidden sm:block">{formattedDate(transaction.createdAt)}</td>
               <td className="py-2 px-4">
-                {transaction.quote.data.payin.amount}
+                {Math.floor(transaction.quote.data.payin.amount)}
                 {transaction.quote.data.payin.currencyCode} {'->'} 
-                {transaction.quote.data.payout.amount}
+                {Math.floor(transaction.quote.data.payout.amount)}
                 {transaction.quote.data.payout.currencyCode}
               </td>
               <td className="py-2 px-4 text-sm hidden sm:block">

@@ -4,22 +4,22 @@ import { formattedDate } from "../../utils/functions";
 import { useEffect, useMemo, useState } from "react";
 
 export default function Offer() {
-    const { filterOfferings, selectedOfferings } = useSelector((state) => state.xchange);
+    const { pfiOfferings, selectedOfferings } = useSelector((state) => state.xchange);
 
     const [pfiOfferingsData, setPfiOfferingsData] = useState({});
     const dispatch = useDispatch();
 
     
     const memoizedOfferingsData = useMemo(() => {
-        return filterOfferings;
-    }, [filterOfferings]);
+        return pfiOfferings;
+    }, [pfiOfferings]);
 
 
     const getOfferingId = (id) => () => {
         if (selectedOfferings?.id === id) {
             dispatch(selectedOffer(null));
         } else {
-            const filteredOffering = Object.values(filterOfferings)
+            const filteredOffering = Object.values(pfiOfferings)
                 .flatMap((offerings) => offerings.filter((offer) => offer.metadata.id === id))[0];
 
             dispatch(selectedOffer({ id: filteredOffering.metadata.id, ...filteredOffering }));

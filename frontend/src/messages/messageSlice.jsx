@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     pfiOfferings: null,
-    filterOfferings: null,
+    paymentUnit: null,
     paymentsCurrency: null,
     PaymentsKinds: null,
     paymentsDetails: null,
@@ -19,10 +19,6 @@ const xchangeSlice = createSlice({
     reducers: {
         pfiOfferings: (state, action) => {
             state.pfiOfferings = action.payload;
-            state.filterOfferings = action.payload;
-        },
-        filterOfferings: (state, action) => {
-            state.filterOfferings = action.payload;
         },
         paymentsCurrency: (state, action) => {
             state.paymentsCurrency = action.payload;
@@ -45,9 +41,12 @@ const xchangeSlice = createSlice({
         },
         setRecentTransctions: (state, action) => {
             state.recentTransactions = action.payload
+        },
+        setPaymentUnit: (state, action) => {
+            state.paymentUnit = action.payload;
         }
     }
 });
 
-export const { pfiOfferings, filterOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions } = xchangeSlice.actions;
+export const { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit } = xchangeSlice.actions;
 export default xchangeSlice.reducer;
