@@ -42,7 +42,7 @@ export default function PFIStat() {
                     </div>
 
                     <div className="flex justify-center mb-6">
-                        <div className='w-72 h-72'>
+                        <div className='w-80 h-80'>
                             <Pie
                                 data={pieChartData}
                                 options={{
@@ -65,7 +65,7 @@ export default function PFIStat() {
         <div className="container mx-auto p-4">
             <Header/>
             <h1 className="text-2xl font-bold text-center mb-8">Statistics Overview</h1>
-            <div className='grid grid-cols-3 gap-3'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
             {stats.length > 0 ? renderStats() : <p className="text-center">Loading statistics...</p>}
             </div>
         </div>

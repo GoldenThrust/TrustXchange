@@ -11,6 +11,7 @@ const initialState = {
     activeQuotes: null,
     selectedQuote: null,
     recentTransactions: null,
+    filtering: false,
 };
 
 const xchangeSlice = createSlice({
@@ -44,9 +45,12 @@ const xchangeSlice = createSlice({
         },
         setPaymentUnit: (state, action) => {
             state.paymentUnit = action.payload;
+        },
+        filtering: (state, action) => {
+            state.filtering = action.payload
         }
     }
 });
 
-export const { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit } = xchangeSlice.actions;
+export const { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit, filtering } = xchangeSlice.actions;
 export default xchangeSlice.reducer;

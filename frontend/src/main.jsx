@@ -6,7 +6,7 @@ import store from './store/store'
 import { Provider } from 'react-redux'
 import App from './App';
 
-axios.defaults.baseURL = "http://localhost:3000";
+// axios.defaults.baseURL = "http://localhost:3000";
 axios.defaults.withCredentials = true;
 
 createRoot(document.getElementById('root')).render(

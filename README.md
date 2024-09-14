@@ -54,10 +54,6 @@ Follow these steps to install and run TrustXchange locally:
   cd TrustXchange
   ```
 3. Install dependencies:
-  - Install root dependencies:
-    ```bash
-    npm install
-    ```
   - Install backend dependencies:
     ```bash
     cd backend/

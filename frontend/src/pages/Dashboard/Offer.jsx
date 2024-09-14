@@ -4,7 +4,7 @@ import { formattedDate } from "../../utils/functions";
 import { useEffect, useMemo, useState } from "react";
 
 export default function Offer() {
-    const { pfiOfferings, selectedOfferings } = useSelector((state) => state.xchange);
+    const { pfiOfferings, selectedOfferings, filtering } = useSelector((state) => state.xchange);
 
     const [pfiOfferingsData, setPfiOfferingsData] = useState({});
     const dispatch = useDispatch();
@@ -37,6 +37,7 @@ export default function Offer() {
                         max-h-80 sm:h-auto sm:border-hidden border-solid border-2 border-indigo-400 rounded-lg sm:shadow-none shadow-xl
                         overflow-x-hidden  
                         sm:overflow-x-visible">
+                            {console.log(filtering)}
                 {pfiOfferingsData && Object.keys(pfiOfferingsData).length ? (
                     Object.entries(pfiOfferingsData).map(([pfiName, offerings]) =>
                         offerings.map((offering) => {
@@ -60,9 +61,9 @@ export default function Offer() {
                             );
                         })
                     )
-                ) : (
-                    <div className="animate-bounce">loading......</div>
-                )}
+                ) : filtering ? (
+                    <div className="animate-bounce">No offerings match your filter criteria. Please adjust your filters.</div>
+                ) : 'loading.....'}
             </div></>
     )
 }

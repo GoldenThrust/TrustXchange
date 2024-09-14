@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef } from "react";
 import { getPFIsOffering } from "../../messages/messageActions";
 import { useDispatch } from "react-redux";
-
+import { filtering } from "../../messages/messageSlice";
 export default function PaymentCurrency({ data, error }) {
     const formHook = useForm();
     const formRef = useRef(null);
@@ -17,6 +17,12 @@ export default function PaymentCurrency({ data, error }) {
             const payoutCurrency = formRef.current?.elements?.payoutCurrencyCode?.value;
             const minUnit = formRef.current?.elements?.minUnit?.value;
             const maxUnit = formRef.current?.elements?.maxUnit?.value;
+
+            if (payinCurrency || payoutCurrency || minUnit || maxUnit) {
+                dispatch(filtering(true));
+            } else {
+                dispatch(filtering(false));
+            }
     
             const payment = {
                 payinCurrencyCode: payinCurrency,
