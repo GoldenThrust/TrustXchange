@@ -23,6 +23,9 @@ TrustXchange is an innovative Web5 application that leverages the power of decen
 - **Customer Satisfaction**:  
   TrustXchange prioritizes user experience by tracking the performance of PFIs. An endpoint has been developed to retrieve transaction statistics such as the number of successful and canceled transactions per PFI. These figures are provided as percentages and displayed on the PFI stats page. By comparing successful transactions against cancellations, users can assess the reliability of various PFIs, allowing them to make more informed decisions when selecting a liquidity provider.
 
+![White Board](roadmap.png)
+
+
 ## Features
 
 - **Decentralized Identity & Security**:  
