@@ -6,6 +6,9 @@
 
 TrustXchange is an innovative Web5 application that leverages the power of decentralized identity and financial interoperability through the [TBDex SDK](https://tbdex.io/). It facilitates secure transactions between wallet applications and liquidity providers, enabling seamless peer-to-peer exchanges while utilizing the latest Web5 and decentralized protocols. Developed as part of the [TBDex Hackathon](https://www.tbdex.io/hackathon), TrustXchange pushes the boundaries of decentralized finance and identity solutions. The project emphasizes user ease by providing an intuitive, efficient, and secure financial experience.
 
+**Demo on youtube 👇**
+[![Youtube Demo](./landing_page.png)](https://youtu.be/HdXSWXRA1qg?si=AXldayhUNIIwf5cU)
+
 ### Key Considerations
 
 - **Profitability**:  
