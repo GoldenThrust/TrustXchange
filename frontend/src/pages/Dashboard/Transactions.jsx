@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { formattedDate } from "../../utils/functions.jsx";
+import { formattedDate } from "../../utils/functions.js";
 import { useSelector } from "react-redux";
 
 export default function Transactions() {

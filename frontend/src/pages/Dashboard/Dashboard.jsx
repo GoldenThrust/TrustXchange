@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PaymentCurrency from "./paymentCurrency.jsx";
 import PaymentKindsForm from "./paymentKind.jsx";
-import { formatWord } from "../../utils/functions.jsx";
+import { formatWord } from "../../utils/functions.js";
 import PaymentDetailsForm from "./PaymentDetails.jsx";
 import Quote from "./Quote.jsx";
 import Transactions from "./Transactions.jsx";

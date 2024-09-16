@@ -2,8 +2,8 @@ import FormField from "../../components/FormField.jsx";
 import { useForm } from "react-hook-form";
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from "react-redux";
-import { formattedTime } from "../../utils/functions.jsx";
-import { requestForQuote } from "../../messages/messageActions.jsx";
+import { formattedTime } from "../../utils/functions.js";
+import { requestForQuote } from "../../messages/messageActions.js";
 
 
 export default function PaymentDetailsForm({ data, error }) {

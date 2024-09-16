@@ -1,4 +1,4 @@
-import { loginRequest, loginSuccess, loginFailure, AuthResponse, AuthError, processingData, logout, verificationFailed } from './authSlice';
+import { loginRequest, loginSuccess, loginFailure, AuthResponse, AuthError, processingData, logout, verificationFailed } from './authSlice.js';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 

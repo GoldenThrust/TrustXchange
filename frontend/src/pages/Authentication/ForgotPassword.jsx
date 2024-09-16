@@ -1,6 +1,6 @@
 import { Header } from "./header.jsx";
 import { useDispatch, useSelector } from 'react-redux';
-import { forgotPassword } from '../../auth/authActions.jsx';
+import { forgotPassword } from '../../auth/authActions.js';
 import Form from "../../components/Form.jsx";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";

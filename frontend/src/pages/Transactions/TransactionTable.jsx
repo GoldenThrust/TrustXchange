@@ -1,4 +1,4 @@
-import { formattedDate } from '../../utils/functions.jsx';
+import { formattedDate } from '../../utils/functions.js';
 import PropTypes from 'prop-types';
 
 export default function TransactionTable({ transactions }) {

@@ -16,8 +16,8 @@ import ResetPassword from './pages/Authentication/ResetPassword.jsx'
 import AccountActivate from './pages/Authentication/AccountActivation.jsx';
 import DashBoard from './pages/Dashboard/Dashboard.jsx';
 import { useEffect } from "react";
-import { verify } from "./auth/authActions.jsx";
-import { getPFIsOffering, fetchTransactions, getActiveQuotes } from "./messages/messageActions.jsx";
+import { verify } from "./auth/authActions.js";
+import { getPFIsOffering, fetchTransactions, getActiveQuotes } from "./messages/messageActions.js";
 import Status from "./pages/Status.jsx";
 import Transactions from "./pages/Transactions/Transactions.jsx";
 import PFIStat from "./pages/PFIStat/PFIStat.jsx";

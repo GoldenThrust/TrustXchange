@@ -1,6 +1,6 @@
 import { Header } from "./header.jsx";
 import { useDispatch, useSelector } from 'react-redux';
-import { sendAccountActivationToken } from '../../auth/authActions.jsx';
+import { sendAccountActivationToken } from '../../auth/authActions.js';
 import Form from "../../components/Form.jsx";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";

@@ -1,9 +1,9 @@
 import { Header } from './header.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { accountActivation } from '../../auth/authActions.jsx';
+import { accountActivation } from '../../auth/authActions.js';
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getPFIsOffering, fetchTransactions, getActiveQuotes } from "../../messages/messageActions.jsx";
+import { getPFIsOffering, fetchTransactions, getActiveQuotes } from "../../messages/messageActions.js";
 
 export default function AccountActivate() {
     const dispatch = useDispatch();

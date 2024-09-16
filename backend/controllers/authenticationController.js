@@ -104,7 +104,7 @@ class AuthenticationController {
                 secure: true,
                 sameSite: "none",
                 httpOnly: true,
-                domain: "localhost",
+                domain: req.loc,
                 signed: true,
                 path: "/",
             });
@@ -118,7 +118,7 @@ class AuthenticationController {
                 sameSite: "none",
                 httpOnly: true,
                 path: "/",
-                domain: "localhost",
+                domain: req.loc,
                 expires,
                 signed: true,
             });
@@ -150,7 +150,7 @@ class AuthenticationController {
                 secure: true,
                 sameSite: "none",
                 httpOnly: true,
-                domain: "localhost",
+                domain: req.loc,
                 signed: true,
                 path: "/",
             });
@@ -209,7 +209,7 @@ class AuthenticationController {
             secure: true,
             sameSite: "none",
             httpOnly: true,
-            domain: "localhost",
+            domain: req.loc,
             signed: true,
             path: "/",
         });
@@ -223,7 +223,7 @@ class AuthenticationController {
             sameSite: "none",
             httpOnly: true,
             path: "/",
-            domain: "localhost",
+            domain: req.loc,
             expires,
             signed: true,
         });

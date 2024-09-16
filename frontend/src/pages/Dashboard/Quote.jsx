@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
-import { formattedDate } from "../../utils/functions.jsx";
-import { selectQuotes } from "../../messages/messageActions.jsx";
+import { formattedDate } from "../../utils/functions.js";
+import { selectQuotes } from "../../messages/messageActions.js";
 
 export default function Quote() {
     const { activeQuotes } = useSelector((state) => state.xchange)

@@ -1,7 +1,7 @@
 // import { useEffect } from "react";
 import { Header } from "./header.jsx";
 import { useDispatch } from 'react-redux';
-import { login } from '../../auth/authActions';
+import { login } from '../../auth/authActions.js';
 import Form from "../../components/Form.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";

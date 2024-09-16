@@ -1,6 +1,6 @@
-import { selectedOffer } from "../../messages/messageActions.jsx";
+import { selectedOffer } from "../../messages/messageActions.js";
 import { useDispatch, useSelector } from "react-redux";
-import { formattedDate } from "../../utils/functions.jsx";
+import { formattedDate } from "../../utils/functions.js";
 import { useEffect, useMemo, useState } from "react";
 
 export default function Offer() {

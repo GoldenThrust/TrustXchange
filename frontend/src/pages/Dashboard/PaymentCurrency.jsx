@@ -2,9 +2,9 @@ import FormField from "../../components/FormField.jsx";
 import { useForm } from "react-hook-form";
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from "react";
-import { getPFIsOffering } from "../../messages/messageActions.jsx";
+import { getPFIsOffering } from "../../messages/messageActions.js";
 import { useDispatch } from "react-redux";
-import { filtering } from "../../messages/messageSlice.jsx";
+import { filtering } from "../../messages/messageSlice.js";
 export default function PaymentCurrency({ data, error }) {
     const formHook = useForm();
     const formRef = useRef(null);

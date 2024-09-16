@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { formattedDate } from "../../utils/functions.jsx";
-import { acceptQuotes, closeQuotes } from "../../messages/messageActions.jsx";
+import { formattedDate } from "../../utils/functions.js";
+import { acceptQuotes, closeQuotes } from "../../messages/messageActions.js";
 
 export default function QuoteDialog() {
     const { selectedQuote } = useSelector((state) => state.xchange);
