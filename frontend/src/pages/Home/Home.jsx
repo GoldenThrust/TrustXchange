@@ -64,7 +64,7 @@ export default function Home() {
                 <span className="sr-only">TrustXchange</span>
                 <img
                   alt=""
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                  src="./logo.svg"
                   className="h-8 w-auto"
                 />
               </a>
