@@ -246,3 +246,5 @@ export const countryCode = {
   ZM: "Zambia",
   ZW: "Zimbabwe"
 };
+
+export const baseUrl = "http://localhost:3000/";

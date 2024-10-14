@@ -6,10 +6,11 @@ import store from './store/store.js'
 import { Provider } from 'react-redux'
 import App from './App';
 import { registerSW } from 'virtual:pwa-register';
+import { baseUrl } from './utils/constant.js';
 
 registerSW();
 
-// axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = baseUrl;
 axios.defaults.withCredentials = true;
 
 createRoot(document.getElementById('root')).render(
