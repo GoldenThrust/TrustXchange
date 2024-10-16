@@ -1,5 +1,5 @@
 import axios from "axios";
-import { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit } from "./messageSlice.js";
+import { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit, setPfis, setPfisStat } from "./messageSlice.js";
 import toast from "react-hot-toast";
 
 export const getPFIsOffering = (data) => async (dispatch) => {
@@ -116,4 +116,16 @@ export const closeQuotes = (data) => async (dispatch) => {
         console.error(error);
         toast.error('Failed to close transaction', { id: 'close-quote' });
     }
+}
+
+export const getPFIStat = () => async (dispatch) => {
+        const pfi = []
+        const response = await axios.get('xchange/getpfistats');
+        const data = await response.data;
+        data.forEach((stat)=> {
+            pfi.push(stat.pfiName)
+        })
+
+        dispatch(setPfisStat(data));
+        dispatch(setPfis(pfi));
 }

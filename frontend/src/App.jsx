@@ -17,7 +17,7 @@ import AccountActivate from './pages/Authentication/AccountActivation.jsx';
 import DashBoard from './pages/Dashboard/Dashboard.jsx';
 import { useEffect } from "react";
 import { verify } from "./auth/authActions.js";
-import { getPFIsOffering, fetchTransactions, getActiveQuotes } from "./messages/messageActions.js";
+import { getPFIsOffering, fetchTransactions, getActiveQuotes, getPFIStat } from "./messages/messageActions.js";
 import Status from "./pages/Status.jsx";
 import Transactions from "./pages/Transactions/Transactions.jsx";
 import PFIStat from "./pages/PFIStat/PFIStat.jsx";
@@ -80,6 +80,7 @@ export default function App() {
             dispatch(getActiveQuotes())
             dispatch(getPFIsOffering())
             dispatch(fetchTransactions())
+            dispatch(getPFIStat())
         }
     }, [dispatch, isAuthenticated]);
 

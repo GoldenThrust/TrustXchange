@@ -1,25 +1,15 @@
-import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import axios from 'axios';
 import { Header } from '../Authentication/header.jsx';
+import { useSelector } from 'react-redux';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function PFIStat() {
-    const [stats, setStats] = useState([]);
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            const response = await axios.get('xchange/getpfistats');
-            const data = await response.data;
-            setStats(data);
-        };
-        fetchStats();
-    }, []);
+    const { pfisStat } = useSelector((state) => state.xchange);
 
     const renderStats = () => {
-        return stats.map((stat, index) => {
+        return pfisStat.map((stat, index) => {
             const pieChartData = {
                 labels: ['Success Rate', 'Cancellation Rate'],
                 datasets: [
@@ -66,7 +56,7 @@ export default function PFIStat() {
             <Header/>
             <h1 className="text-2xl font-bold text-center mb-8">Statistics Overview</h1>
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-            {stats.length > 0 ? renderStats() : <p className="text-center">Loading statistics...</p>}
+            {pfisStat.length > 0 ? renderStats() : <p className="text-center">Loading statistics...</p>}
             </div>
         </div>
     );

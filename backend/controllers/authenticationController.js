@@ -88,7 +88,7 @@ class AuthenticationController {
             const { email, password } = req.body;
             const user = await User.findOne({ email });
             if (!user) {
-                return res.status(401).send("User not registered");
+                  return res.status(403).json({ status: "ERROR", message: "User not registered" });
             }
 
             if (!user.active) {
@@ -258,7 +258,6 @@ class AuthenticationController {
         const { password } = req.body;
         const token = req.params.token;
         const email = await redisDB.get(token);
-        console.log(token, email);
         if (!email) {
             return res.status(401).json({ status: "ERROR", message: "Invalid or expired token" });
         }

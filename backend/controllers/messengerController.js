@@ -38,7 +38,8 @@ class MessageController {
     async getOfferings(req, res) {
         try {
             const user = await User.findById(res.locals.jwtData.id);
-            const { payinCurrencyCode, payoutCurrencyCode, minUnit, maxUnit } = req.body;
+            const { payinCurrencyCode, payoutCurrencyCode, minUnit, maxUnit, pfi } = req.body;
+
 
             if (!user) {
                 return res.status(401).json({
@@ -64,6 +65,7 @@ class MessageController {
             const payOut = new Set();
 
             Object.entries(offeringsData).forEach(([key, offerings]) => {
+                if (pfi && pfi !== key) return;
                 offerings.forEach((offering) => {
                     const payoutUnitsPerPayinUnit = offering.data.payoutUnitsPerPayinUnit;
 

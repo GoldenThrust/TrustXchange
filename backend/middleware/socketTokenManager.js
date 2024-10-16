@@ -14,6 +14,6 @@ export default function authenticateToken(socket, next) {
     return next();
   } catch (error) {
     next();
-    return console.log(error);
+    return console.error(error);
   }
 }

@@ -19,7 +19,6 @@ export default function Quote() {
                     <div className="grid gap-2 grid-cols-1 lg:grid-cols-2">
                         {Object.values(activeQuotes).map((quote) => (
                             <div key={quote.metadata.id} id={quote.metadata.id} onClick={showQuote} className="quote transition-all active:bg-indigo-800 cursor-pointer hover:bg-green-700 flex h-24 bg-green-400 text-teal-50 justify-between flex-col rounded-2xl p-2 animate-pulse" >
-                                {console.log(quote)}
                                 <div className="flex justify-between">
                                     <div>
                                         <div className="font-semibold">{quote.pfiName}</div>

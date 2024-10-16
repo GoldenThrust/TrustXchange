@@ -1,4 +1,5 @@
 import { loginRequest, loginSuccess, loginFailure, AuthResponse, AuthError, processingData, logout, verificationFailed } from './authSlice.js';
+import { getActiveQuotes, getPFIsOffering, fetchTransactions, getPFIStat } from '../messages/messageActions.js'
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -9,6 +10,10 @@ export const login = (form) => async (dispatch) => {
     const res = await axios.post('auth/login', form);
     const user = res.data.message;
     toast.success("Successfully signed in!", { id: "login" })
+    dispatch(getActiveQuotes())
+    dispatch(getPFIsOffering())
+    dispatch(fetchTransactions())
+    dispatch(getPFIStat())
     dispatch(loginSuccess(user));
   } catch (error) {
     toast.error("Failed to sign in. Please try again.", { id: "login" })

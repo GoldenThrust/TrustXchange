@@ -5,7 +5,8 @@ import { useEffect, useRef } from "react";
 import { getPFIsOffering } from "../../messages/messageActions.js";
 import { useDispatch } from "react-redux";
 import { filtering } from "../../messages/messageSlice.js";
-export default function PaymentCurrency({ data, error }) {
+
+export default function FilterOffer({ data, error }) {
     const formHook = useForm();
     const formRef = useRef(null);
     const dispatch = useDispatch();
@@ -17,8 +18,10 @@ export default function PaymentCurrency({ data, error }) {
             const payoutCurrency = formRef.current?.elements?.payoutCurrencyCode?.value;
             const minUnit = formRef.current?.elements?.minUnit?.value;
             const maxUnit = formRef.current?.elements?.maxUnit?.value;
+            const pfi = formRef.current?.elements?.pfi?.value;
 
-            if (payinCurrency || payoutCurrency || minUnit || maxUnit) {
+
+            if (payinCurrency || payoutCurrency || minUnit || maxUnit || pfi) {
                 dispatch(filtering(true));
             } else {
                 dispatch(filtering(false));
@@ -29,6 +32,7 @@ export default function PaymentCurrency({ data, error }) {
                 payoutCurrencyCode: payoutCurrency,
                 minUnit,
                 maxUnit,
+                pfi,
             };
     
             if (e.target.name === 'payinCurrencyCode') {
@@ -45,6 +49,7 @@ export default function PaymentCurrency({ data, error }) {
             formElements.payoutCurrencyCode?.addEventListener("change", handleChange);
             formElements.minUnit?.addEventListener("input", handleChange);
             formElements.maxUnit?.addEventListener("input", handleChange);
+            formElements.pfi?.addEventListener("input", handleChange);
         }
     
         return () => {
@@ -53,6 +58,7 @@ export default function PaymentCurrency({ data, error }) {
                 formElements.payoutCurrencyCode?.removeEventListener("change", handleChange);
                 formElements.minUnit?.removeEventListener("input", handleChange);
                 formElements.maxUnit?.removeEventListener("input", handleChange);
+                formElements.pfi?.removeEventListener("input", handleChange);
             }
         };
     }, [dispatch, data]);
@@ -70,7 +76,7 @@ export default function PaymentCurrency({ data, error }) {
     );
 }
 
-PaymentCurrency.propTypes = {
+FilterOffer.propTypes = {
     data: PropTypes.array.isRequired,
     error: PropTypes.string,
 };

@@ -2,7 +2,7 @@ import Headers from "./Header.jsx"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import PaymentCurrency from "./paymentCurrency.jsx";
+import FilterOffer from "./FilterOffer.jsx";
 import PaymentKindsForm from "./paymentKind.jsx";
 import { formatWord } from "../../utils/functions.js";
 import PaymentDetailsForm from "./PaymentDetails.jsx";
@@ -18,7 +18,7 @@ export default function DashBoard() {
     const [transactionKind, setTransactionKind] = useState([]);
     const [paymentDetails, selectPaymentsDetails] = useState([]);
     
-    const { paymentUnit } = useSelector((state)=> state.xchange)
+    const { paymentUnit, pfis } = useSelector((state)=> state.xchange)
     const { isAuthenticated } = useSelector((state) => state.auth)
     const navigate = useNavigate();
 
@@ -32,8 +32,9 @@ export default function DashBoard() {
         setTransactionCurrency([
             { register: 'payinCurrencyCode', label: 'From Currency', type: 'select', options: paymentsCurrency?.payIn || [] },
             { register: 'payoutCurrencyCode', label: 'To Currency', type: 'select', options: paymentsCurrency?.payOut || [] },
-            { register: 'minUnit', label: 'Min Payout', type: 'text', placeholder: `Min: ${paymentUnit?.minPaymentUnit}`},
-            { register: 'maxUnit', label: 'Max Payout', type: 'text',  placeholder: `Max: ${paymentUnit?.maxPaymentUnit}` },
+            { register: 'minUnit', label: 'Min Payout', type: 'text', placeholder: `Min: ${paymentUnit?.minPaymentUnit || 0}`},
+            { register: 'maxUnit', label: 'Max Payout', type: 'text',  placeholder: `Max: ${paymentUnit?.maxPaymentUnit || 0}` },
+            { register: 'pfi', label: 'PFI', type: 'select', placeholder: 'Select PFI', options: pfis || [], className: 'col-span-2' },
         ]);
 
 
@@ -71,7 +72,7 @@ export default function DashBoard() {
 
 
 
-    }, [paymentsCurrency,  PaymentsKinds, paymentsDetails, paymentUnit]);
+    }, [paymentsCurrency,  PaymentsKinds, paymentsDetails, paymentUnit, pfis]);
 
 
     return (
@@ -81,7 +82,7 @@ export default function DashBoard() {
                 <div>
                     <div>
                         <h2 className="text-3xl font-bold text-gray-900">Transactions</h2>
-                        {PaymentsKinds ? selectedPaymentsKind ? (<PaymentDetailsForm data={paymentDetails} />) : (<PaymentKindsForm data={transactionKind} />) : (<PaymentCurrency data={transactionCurrency} />)}
+                        {PaymentsKinds ? selectedPaymentsKind ? (<PaymentDetailsForm data={paymentDetails} />) : (<PaymentKindsForm data={transactionKind} />) : (<FilterOffer data={transactionCurrency} />)}
                     </div>
                     <div>
                         <Offer />
