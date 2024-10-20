@@ -75,6 +75,18 @@ class RedisClient {
     return this.client.HDEL(key, field);
   }
 
+  async setArray(key, value, exp) {
+    const cache = await redisDB.get(key);
+
+    if (!cache) {
+        await redisDB.set(key, JSON.stringify([value]), exp);
+    } else {
+        const parse = JSON.parse(cache);
+        parse.push(value);
+        await redisDB.set(key, JSON.stringify(parse), exp);
+    }
+  }
+
   hgetall(key) {
     return this.client.HGETALL(key);
   }

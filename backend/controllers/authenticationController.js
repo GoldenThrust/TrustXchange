@@ -10,14 +10,7 @@ import { redisDB } from "../config/db.js";
 class AuthenticationController {
     async verify(req, res) {
         try {
-            const user = await User.findById(res.locals.jwtData.id);
-            if (!user) {
-                return res.status(401).send({ "message": "User not registered OR Token malfunctioned" });
-            }
-
-            if (user._id.toString() !== res.locals.jwtData.id) {
-                return res.status(403).send("Permissions didn't match");
-            }
+            const user = req.user;
 
             const { name, email, address, image, city, state, country, zip, did } = user;
 
@@ -26,7 +19,7 @@ class AuthenticationController {
                 .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did: did.uri } });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ status: "ERROR", message: error.message });
+            return res.status(500).json({ status: "ERROR", message: "Internal Server Error" });
         }
     }
 
@@ -79,7 +72,7 @@ class AuthenticationController {
                 .json({ status: "OK", message: "We've sent an activation link to your email. Please check your inbox to activate your account." });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ status: "ERROR", message: error.message });
+            return res.status(500).json({ status: "ERROR", message: "Internal Server Error" });
         }
     }
 
@@ -88,7 +81,7 @@ class AuthenticationController {
             const { email, password } = req.body;
             const user = await User.findOne({ email });
             if (!user) {
-                  return res.status(403).json({ status: "ERROR", message: "User not registered" });
+                  return res.status(403).json({ status: "ERROR", message: "Account not registered" });
             }
 
             if (!user.active) {
@@ -130,7 +123,7 @@ class AuthenticationController {
                 .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did: did.uri } });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ status: "ERROR", message: error.message });
+            return res.status(500).json({ status: "ERROR", message: "Internal Server Error" });
         }
     }
 
@@ -139,7 +132,7 @@ class AuthenticationController {
         try {
             const user = await User.findById(res.locals.jwtData.id);
             if (!user) {
-                return res.status(401).send({ "message": "User not registered OR Token malfunctioned" });
+                return res.status(401).send({ "message": "Account not registered OR Token malfunctioned" });
             }
 
             if (user._id.toString() !== res.locals.jwtData.id) {
@@ -161,7 +154,7 @@ class AuthenticationController {
                 .json({ status: "OK" });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ status: "ERROR", message: error.message });
+            return res.status(500).json({ status: "ERROR", message: "Internal Server Error" });
         }
     }
 
@@ -170,14 +163,18 @@ class AuthenticationController {
 
         const user = await User.findOne({ email });
 
+        if (!user) {
+            return res.status(403).json({ status: "ERROR", message: "Account not found" });
+        }
+
         if (user.active) {
-            return res.json({ status: "ERROR", message: "Account is already activate" });
+            return res.status(403).json({ status: "ERROR", message: "Account is already activate" });
         }
 
         try {
             await mail.sendActivationEmail(user)
         } catch (error) {
-            res.json({ status: "ERROR", message: "Failed to send activation link" });
+            res.status(500).json({ status: "ERROR", message: "Failed to send activation link" });
         }
 
 

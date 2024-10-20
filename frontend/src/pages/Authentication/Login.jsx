@@ -35,7 +35,7 @@ export default function Login() {
   return (
     <>
       <Header />
-      <Form title="Sign In" data={formData} onSubmit={onSubmit} error={loginerror} />
+      <Form title="Sign In" data={formData} onSubmit={onSubmit} error={loginerror} SubmitLabel='Login' />
       <div className="flex justify-between m-auto w-10/12 my-10">
         <Link to="/forgot-password" className="text-indigo-600">
           Forgot password?

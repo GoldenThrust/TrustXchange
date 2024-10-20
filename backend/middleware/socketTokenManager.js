@@ -1,7 +1,7 @@
 import { COOKIE_NAME } from "../utils/constants.js";
 import jwt from "jsonwebtoken";
 
-export default function authenticateToken(socket, next) {
+export default function socketAuthenticateToken(socket, next) {
   const token = socket.request.signedCookies[COOKIE_NAME]
   if (!token || token.trim() === "") {
     return next();

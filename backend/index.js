@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { mongoDB, redisDB } from "./config/db.js";
 import "dotenv/config"
 
+import websocket from "./config/websocket.js";
 import { SitemapStream, streamToPromise } from "sitemap";
 import { Readable } from "stream";
 import { createGzip } from "zlib";
@@ -13,7 +14,13 @@ import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import messengerRoute from "./routes/messenger.js";
-import { TbdexHttpClient } from "@tbdex/http-client";
+
+// import { TbdexHttpClient } from "@tbdex/http-client";
+import { Server } from "socket.io";
+import { createAdapter } from "@socket.io/redis-streams-adapter";
+import socketcookieParser from "./middleware/socketCookieParser.js";
+import socketAuthenticateToken from "./middleware/socketTokenManager.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -21,7 +28,8 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
-const allowOrigin = 'http://localhost:5173'
+const allowOrigin = 'http://localhost:5173';
+
 app.set("trust proxy", 3)
 app.use(cors({ origin: allowOrigin, credentials: true }));
 app.use(express.json());
@@ -32,25 +40,22 @@ app.use('/auth', authRoutes)
 app.use('/xchange', messengerRoute);
 
 // Generate sitemap
-app.get("/sitemap.xml", function (req, res) {
+app.get("/sitemap.xml", async function (req, res) {
   res.header('Content-Type', 'application/xml');
   res.header('Content-Encoding', 'gzip');
-  let sitemap = redisDB.get("sitemap");
-
-  if (sitemap) {
-    res.send(sitemap);
-    return;
-  }
 
   try {
-    const smStream = new SitemapStream({ hostname: 'https://example.com/' })
-    const pipeline = smStream.pipe(createGzip())
+    let sitemap = await redisDB.get("sitemap");
+
+    if (sitemap) {
+      res.send(sitemap);
+      return;
+    }
+
+    const smStream = new SitemapStream({ hostname: 'https://localhost:3000/' });
+    const pipeline = smStream.pipe(createGzip());
 
     const authEndpoints = [
-      ...authEndpoints.map(endpoint => ({ url: `/auth/${endpoint}` })),
-    ];
-
-    Readable.from([
       { url: '/auth/register' },
       { url: '/auth/login' },
       { url: '/auth/verify' },
@@ -58,18 +63,26 @@ app.get("/sitemap.xml", function (req, res) {
       { url: '/auth/activate' },
       { url: '/auth/resend-activate' },
       { url: '/auth/forgot-password' },
-      { url: '/auth/reset-password' },
-    ]).pipe(smStream)
+      { url: '/auth/reset-password' }
+    ];
 
-    streamToPromise(pipeline).then(sm => redisDB.set('sitemap', sm, 10 * 24 * 60 * 60))
+    Readable.from(authEndpoints).pipe(smStream);
 
-    smStream.end()
-    pipeline.pipe(res).on('error', (e) => { throw e })
+    const generatedSitemap = await streamToPromise(pipeline);
+
+    await redisDB.set('sitemap', generatedSitemap, 10 * 24 * 60 * 60);
+
+    pipeline.pipe(res).on('error', (e) => {
+      throw e;
+    });
+
+    smStream.end();
   } catch (e) {
-    console.error(e)
-    res.status(500).end()
+    console.error(e);
+    res.status(500).end();
   }
-})
+});
+
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
@@ -87,5 +100,19 @@ server.listen(PORT, () => {
 
   mongoDB.run().catch(console.dir)
   redisDB.run().catch(console.dir)
+
+  const io = new Server(server, {
+    adapter: createAdapter(redisDB.client),
+
+    cors: {
+      origin: allowOrigin,
+      credentials: true,
+    }
+  });
+
+  io.use(socketcookieParser)
+  io.use(socketAuthenticateToken)
+
+  websocket.getConnection(io);
   console.log(`Server is running on http://localhost:${PORT}`);
 });

@@ -4,7 +4,7 @@ import { forgotPassword } from '../../auth/authActions.js';
 import Form from "../../components/Form.jsx";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+// TODO: useState for error messages
 export default function ForgotPassword() {
     const navigate = useNavigate();
     const dispatch = useDispatch();

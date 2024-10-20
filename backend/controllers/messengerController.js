@@ -5,7 +5,10 @@ import { DidDht } from "@web5/dids";
 import User from '../models/user.js';
 import Transactions from '../models/transactions.js';
 import { mongoDB, redisDB } from "../config/db.js";
-import { getSecondsRemaining } from '../utils/utils.js';
+import { getSecondsRemaining, pollRFQ } from '../utils/utils.js';
+import websocket from '../config/websocket.js';
+import mail from '../config/mail.js';
+import { RFQQueue } from '../worker.js';
 
 
 class MessageController {
@@ -37,23 +40,8 @@ class MessageController {
     }
     async getOfferings(req, res) {
         try {
-            const user = await User.findById(res.locals.jwtData.id);
+            const user = req.user;
             const { payinCurrencyCode, payoutCurrencyCode, minUnit, maxUnit, pfi } = req.body;
-
-
-            if (!user) {
-                return res.status(401).json({
-                    status: "ERROR",
-                    message: "User not registered OR Token malfunctioned",
-                });
-            }
-
-            if (!user.active) {
-                return res.status(403).json({
-                    status: "ERROR",
-                    message: "Account is not active",
-                });
-            }
 
             const response = {};
             const { vc } = user;
@@ -74,11 +62,11 @@ class MessageController {
 
                     if (payinCurrencyCode && offering.data.payin.currencyCode !== payinCurrencyCode) return;
                     payOut.add(offering.data.payout.currencyCode);
-                    
+
                     if (payoutCurrencyCode && offering.data.payout.currencyCode !== payoutCurrencyCode) return;
                     if (minUnit && payoutUnitsPerPayinUnit < minUnit) return;
                     minPaymentUnit = Math.min(minPaymentUnit, payoutUnitsPerPayinUnit);
-                    
+
                     if (maxUnit && payoutUnitsPerPayinUnit > maxUnit) return;
 
                     try {
@@ -139,16 +127,7 @@ class MessageController {
 
     async filterOfferings(req, res) {
         try {
-            const user = await User.findById(res.locals.jwtData.id);
-
-            if (!user) {
-                return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
-            }
-
-            if (!user.active) {
-                return res.status(403).json({ status: "ERROR", message: "Account is not active" });
-            }
-
+            const user = req.user;
             const { payinCurrencyCode, payoutCurrencyCode } = req.body;
 
             const response = {};
@@ -189,14 +168,7 @@ class MessageController {
             const payinPaymentDetails = JSON.parse(req.body.payinPaymentDetails);
             const payoutPaymentDetails = JSON.parse(req.body.payoutPaymentDetails);
 
-            const user = await User.findById(res.locals.jwtData.id);
-            if (!user) {
-                return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
-            }
-            if (!user.active) {
-                return res.status(403).json({ status: "ERROR", message: "Account is not active" });
-            }
-
+            const user = req.user;
             const { did, vc } = user;
 
             const selectedCredentials = PresentationExchange.selectCredentials({
@@ -236,9 +208,6 @@ class MessageController {
             const exchangeId = rfq.exchangeId;
             let quote = null;
             let close = null;
-            let attempts = 0;
-            const maxAttempts = 30;
-            const delay = 2000;
             let pfiName = '';
 
             Object.entries(pfiDids).map(async ([key, pfiDid]) => {
@@ -246,70 +215,34 @@ class MessageController {
                     pfiName = key;
             });
 
-            while (!quote && attempts < maxAttempts) {
-                try {
-                    const exchange = await TbdexHttpClient.getExchange({
-                        pfiDid: offering.metadata.from,
-                        did: resolveDid,
-                        exchangeId,
-                    });
-
-                    quote = exchange.find((msg) => msg instanceof Quote);
-
-                    for (const message of exchange) {
-                        if (message instanceof OrderStatus) {
-                            console.log(message.data.orderStatus);
-                        }
-                        else if (message instanceof Close) {
-                            close = message;
-                            break;
-                        }
-                    }
-
-                    if (!quote) {
-                        close = exchange.find((msg) => msg instanceof Close);
-
-                        if (close) {
-                            break;
-                        } else {
-                            await new Promise((resolve) => setTimeout(resolve, delay));
-                        }
-                    }
-                } catch (e) {
-                    if (e.statusCode === 404 || e.statusCode === 401) {
-                    } else {
-                        throw e;
-                    }
-                }
-
-                attempts++;
+            const options = {
+                pfiDid: offering.metadata.from,
+                did: resolveDid,
+                exchangeId,
             }
 
+            const response = await pollRFQ(user, rfq, pfiName, options, 30);
 
-            if (quote) {
-                await redisDB.hset(user._id.toString(), quote.metadata.exchangeId, JSON.stringify({ ...rfq, ...quote, pfiName }));
-                res.status(201).json({ ...quote, status: 'OPEN' });
-            } else if (close) {
-                res.status(200).json({ ...close, status: 'CLOSED' });
+            if (response.quote) {
+                quote = response.quote;
+                res.status(201).json({ ...quote, status: 'OPEN', message: 'Quote received successfully' });
+            } else if (response.close) {
+                close = response.close;
+                res.status(400).json({ ...close, status: 'CLOSED', message: "Quote Has been Closed" });
             } else {
                 res.status(408).json({ status: "ERROR", message: "Timeout waiting for quote" });
+                RFQQueue.add({ options, rfq, pfiName, did, user_id: user });
             }
         } catch (err) {
             console.error('Failed to create RFQ:', err);
-            return res.status(400).json({ error: 'Failed to create RFQ' });
+            return res.status(500).json({ error: 'Failed to create RFQ' });
         }
     }
 
     async closeQuote(req, res) {
         const { pfiDid, exchangeId } = req.body;
 
-        const user = await User.findById(res.locals.jwtData.id);
-        if (!user) {
-            return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
-        }
-        if (!user.active) {
-            return res.status(403).json({ status: "ERROR", message: "Account is not active" });
-        }
+        const user = req.user;
 
         const { did } = user;
         try {
@@ -326,7 +259,7 @@ class MessageController {
             });
 
             await close.sign(resolveDid);
-            await TbdexHttpClient.submitClose(close);
+            const response = await TbdexHttpClient.submitClose(close);
 
             let quote = await redisDB.hget(user._id.toString(), exchangeId);
             quote = JSON.parse(quote);
@@ -341,21 +274,24 @@ class MessageController {
             redisDB.hdel(user._id.toString(), exchangeId)
             res.status(200).json({ ...close, status: "OK" })
         } catch (err) {
+            redisDB.hdel(user._id.toString(), exchangeId)
             console.error('Failed to close quote:', err);
             return res.status(400).json({ error: 'Failed to close quote' });
         }
+
+        websocket.emitCloseQuote();
     }
 
     async acceptQuote(req, res) {
-        const { pfiDid, exchangeId } = req.body;
+        const data = req.body;
 
-        const user = await User.findById(res.locals.jwtData.id);
-        if (!user) {
-            return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
-        }
-        if (!user.active) {
-            return res.status(403).json({ status: "ERROR", message: "Account is not active" });
-        }
+        const { pfiDid, exchangeId } = data;
+        data.status = 'IN_PROGRESS';
+
+        const user = req.user;
+        const key = `processing_quote_${user._id.toString()}`;
+
+        await redisDB.hset(key, exchangeId, JSON.stringify(data))
 
         const { did } = user;
         try {
@@ -386,6 +322,7 @@ class MessageController {
                 for (const message of exchange) {
                     if (message instanceof OrderStatus) {
                         status = message.data.orderStatus;
+                        websocket.emitQuoteStatus(status, exchangeId);
                     }
                     else if (message instanceof Close) {
                         close = message;
@@ -394,16 +331,7 @@ class MessageController {
                 }
             }
 
-            const cacheOrder = await redisDB.get(`order_${user._id.toString()}`);
-
-            if (!cacheOrder) {
-                await redisDB.set(`order_${user._id.toString()}`, JSON.stringify([exchangeId]), 10 * 24 * 60 * 60);
-            } else {
-                const parseOrder = JSON.parse(cacheOrder);
-                parseOrder.push(exchangeId);
-                await redisDB.set(`order_${user._id.toString()}`, JSON.stringify(parseOrder), 10 * 24 * 60 * 60);
-            }
-
+            mail.sendTransactionSuccess(user, data)
 
             let quote = await redisDB.hget(user._id.toString(), exchangeId);
             quote = JSON.parse(quote);
@@ -414,24 +342,48 @@ class MessageController {
 
             quote.privateData = {};
 
-            await Transactions.create({ user, quote, transaction: close || {}, status, exchangeId, pfiName: quote.pfiName });
-            redisDB.hdel(user._id.toString(), exchangeId)
 
+            await Transactions.create({ user, quote, transaction: close || {}, status, exchangeId, pfiName: quote.pfiName });
+
+            await redisDB.hdel(key, exchangeId);
+            await redisDB.hdel(user._id.toString(), exchangeId)
             res.status(200).json({ ...close, status })
         } catch (err) {
+            await redisDB.hdel(user._id.toString(), exchangeId)
+            await redisDB.hdel(key, exchangeId);
             console.error('Failed to accept quote:', err);
             return res.status(400).json({ error: 'Failed to accept quote' });
         }
     }
 
+    async getAllProcessingQuotes(req, res) {
+        const user = req.user;
+
+        const quotes = await redisDB.hgetall(`processing_quote_${user._id.toString()}`);
+
+        Object.entries(quotes).forEach(([key, value]) => {
+            try {
+                quotes[key] = JSON.parse(value);
+
+                if (!getSecondsRemaining(quotes[key].expiresAt)) {
+                    redisDB.hdel(user._id.toString(), key);
+                }
+            } catch (error) {
+                console.error(`Error parsing value for key ${key}: ${"Internal Server Error"}`);
+                redisDB.hdel(user._id.toString(), key);
+            }
+        })
+
+        if (!quotes) {
+            return res.status(200).json([]);
+        }
+
+        return res.json(quotes);
+
+    }
+
     async getActiveQuotes(req, res) {
-        const user = await User.findById(res.locals.jwtData.id);
-        if (!user) {
-            return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
-        }
-        if (!user.active) {
-            return res.status(403).json({ status: "ERROR", message: "Account is not active" });
-        }
+        const user = req.user;
 
         const quotes = await redisDB.hgetall(user._id.toString());
 
@@ -443,7 +395,7 @@ class MessageController {
                     redisDB.hdel(user._id.toString(), key);
                 }
             } catch (error) {
-                console.error(`Error parsing value for key ${key}: ${error.message}`);
+                console.error(`Error parsing value for key ${key}: ${"Internal Server Error"}`);
                 redisDB.hdel(user._id.toString(), key);
             }
         })
@@ -457,13 +409,7 @@ class MessageController {
 
         const skip = (page - 1) * limit;
 
-        const user = await User.findById(res.locals.jwtData.id);
-        if (!user) {
-            return res.status(401).json({ status: "ERROR", message: "User not registered OR Token malfunctioned" });
-        }
-        if (!user.active) {
-            return res.status(403).json({ status: "ERROR", message: "Account is not active" });
-        }
+        const user = req.user;
 
         const transactions = await Transactions.find({ user: user._id })
             .sort({ createdAt: -1 })

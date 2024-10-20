@@ -39,16 +39,14 @@ export default function AccountActivate() {
             {
                 loading ? (
                     <h1 className='font-extrabold text-4xl text-center'>Activating Account</h1>
-                ) : (
-                    <>
-                        <h1 className='font-extrabold text-4xl text-center'>Account Activated</h1>
-                        <p className='font-thin text-4xl text-center'>
-                            Your account has been successfully activated. You will be redirected in 3 seconds.
-                        </p>
-                    </>
+                ) : (error ? <p role="alert" className="text-red-500 font-thin text-4xl text-center">{error}</p> : <>
+                    <h1 className='font-extrabold text-4xl text-center'>Account Activated</h1>
+                    <p className='font-thin text-4xl text-center'>
+                        Your account has been successfully activated. You will be redirected in 3 seconds.
+                    </p>
+                </>
                 )
             }
-            {error && <p role="alert" className="text-red-500 font-thin text-4xl text-center">{error}</p>}
         </div>
     );
 }

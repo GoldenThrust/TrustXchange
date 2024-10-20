@@ -111,12 +111,16 @@ export default function SignUp() {
 
         <input
           type="submit"
+          value="Create Account"
           className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-400"
         />
       </form>
-      <div className="m-auto w-10/12 my-10">
+      <div className="flex justify-between m-auto w-10/12 my-10">
         <Link to="/login" className="text-indigo-600">
           Already have an account? Sign in
+        </Link>
+        <Link to="/resend-activation-token" className="text-indigo-600">
+          Activation link expired? Click here to resend.
         </Link>
       </div>
     </>

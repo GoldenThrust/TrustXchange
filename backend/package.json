@@ -4,14 +4,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "start-server": "nodemon index.js",
+    "start": "node index.js && worker.js",
+    "start-server": "nodemon index.js && worker.js",
     "test": "jest --passWithNoTests"
   },
   "author": "Adeniji Olajide",
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "@socket.io/redis-streams-adapter": "^0.2.2",
     "@tbdex/http-client": "^1.1.0",
     "@web5/credentials": "^1.0.3",
     "@web5/dids": "^1.1.2",

@@ -11,6 +11,7 @@ const initialState = {
     activeQuotes: null,
     selectedQuote: null,
     recentTransactions: null,
+    processingQuote: null,
     filtering: false,
     pfis: [],
     pfisStat: [],
@@ -57,8 +58,26 @@ const xchangeSlice = createSlice({
         setPfisStat: (state, action) => {
             state.pfisStat = action.payload
         },
+        setProcessingQuotes: (state, action) => {
+            state.processingQuote = action.payload;
+        },
+        updateQuoteStatus(state, action) {
+            const updatedQuote = action.payload;
+            const exchangeId = updatedQuote.exchangeId;
+
+            // Check if the exchangeId exists in the processingQuote object
+            if (state.processingQuote[exchangeId]) {
+                // Update the status of the quote with the given exchangeId
+                state.processingQuote[exchangeId] = {
+                    ...state.processingQuote[exchangeId],
+                    status: updatedQuote.status,
+                };
+            } else {
+                console.error(`Quote with exchangeId ${exchangeId} not found.`);
+            }
+        },
     }
 });
 
-export const { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit, filtering, setPfis, setPfisStat } = xchangeSlice.actions;
+export const { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit, filtering, setPfis, setPfisStat, setProcessingQuotes, updateQuoteStatus } = xchangeSlice.actions;
 export default xchangeSlice.reducer;

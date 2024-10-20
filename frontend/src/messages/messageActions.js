@@ -1,5 +1,5 @@
 import axios from "axios";
-import { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit, setPfis, setPfisStat } from "./messageSlice.js";
+import { pfiOfferings, paymentsCurrency, selectedOfferings, paymentKinds, selectedPaymentsDetails, setActiveQuotes, selectedQuote, setRecentTransctions, setPaymentUnit, setPfis, setPfisStat, setProcessingQuotes, updateQuoteStatus } from "./messageSlice.js";
 import toast from "react-hot-toast";
 
 export const getPFIsOffering = (data) => async (dispatch) => {
@@ -55,13 +55,16 @@ export const requestForQuote = (data) => async (dispatch) => {
         dispatch(paymentKinds(null))
         toast.loading('Requesting quote...', { id: 'quote' });
 
-        await axios.post('xchange/request-quote', data);
+        const response = await axios.post('xchange/request-quote', data);
 
         dispatch(getActiveQuotes());
-        toast.success('Quote received successfully', { id: 'quote' });
+        toast.success(response.data.message, { id: 'quote' });
     } catch (error) {
         console.error(error);
-        toast.error('Failed to request quote', { id: 'quote' });
+        if (error.response.data.message)
+            toast.error(error.response.data.message, { id: 'quote' });
+        else
+            toast.error(error.message, { id: 'quote' });
     }
 }
 
@@ -73,6 +76,20 @@ export const getActiveQuotes = () => async (dispatch) => {
     } catch (error) {
         console.error(error);
     }
+}
+
+
+export const getProcessingQuotes = () => async (dispatch) => {
+    try {
+        const res = await axios.get('xchange/processing-quotes');
+        dispatch(setProcessingQuotes(res.data));
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const updateProcessingQuotes = (update) => async (dispatch) => {
+    dispatch(updateQuoteStatus(update))
 }
 
 export const fetchTransactions = () => async (dispatch) => {
@@ -95,12 +112,14 @@ export const acceptQuotes = (data) => async (dispatch) => {
         toast.loading('Processing transaction...', { id: 'accept-quote' });
         await axios.post('xchange/accept-quote', data);
         toast.success('Transaction completed successfully', { id: 'accept-quote' });
-        dispatch(getActiveQuotes());
         dispatch(fetchTransactions())
     } catch (error) {
         console.error(error);
+        dispatch(getProcessingQuotes())
         toast.error('Failed to process transaction', { id: 'accept-quote' });
     }
+
+    dispatch(getActiveQuotes());
 }
 
 export const closeQuotes = (data) => async (dispatch) => {
@@ -116,16 +135,21 @@ export const closeQuotes = (data) => async (dispatch) => {
         console.error(error);
         toast.error('Failed to close transaction', { id: 'close-quote' });
     }
+
+    dispatch(getProcessingQuotes())
+    dispatch(getActiveQuotes());
 }
 
 export const getPFIStat = () => async (dispatch) => {
-        const pfi = []
-        const response = await axios.get('xchange/getpfistats');
-        const data = await response.data;
-        data.forEach((stat)=> {
-            pfi.push(stat.pfiName)
-        })
+    const pfi = []
+    const response = await axios.get('xchange/getpfistats');
+    const data = await response.data;
+    data.forEach((stat) => {
+        pfi.push(stat.pfiName)
+    })
 
-        dispatch(setPfisStat(data));
-        dispatch(setPfis(pfi));
+    dispatch(setPfisStat(data));
+    dispatch(setPfis(pfi));
 }
+
+

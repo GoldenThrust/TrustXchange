@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { formattedDate } from "../../utils/functions.js";
-import { acceptQuotes, closeQuotes } from "../../messages/messageActions.js";
+import { acceptQuotes, closeQuotes, getProcessingQuotes } from "../../messages/messageActions.js";
+import PropTypes from "prop-types";
 
-export default function QuoteDialog() {
+export default function QuoteDialog({ socket }) {
     const { selectedQuote } = useSelector((state) => state.xchange);
     const [quote, setQuote] = useState(selectedQuote);
     const dispatch = useDispatch();
@@ -14,9 +15,17 @@ export default function QuoteDialog() {
 
     const acceptQuote = () => {
         const data = {
-            'pfiDid': quote[0].metadata.from,
-            'exchangeId': quote[0].metadata.exchangeId
+            pfiDid: quote[0].metadata.from,
+            exchangeId: quote[0].metadata.exchangeId,
+            pfiName: quote[0].pfiName,
+            payin: quote[0].data.payin,
+            payout: quote[0].data.payout,
+            expiresAt: quote[0].data.expiresAt
         }
+        setTimeout(()=> {
+            dispatch(getProcessingQuotes())
+            socket.emit('quote_accepted')
+        }, 500)
 
         dispatch(acceptQuotes(data));
     }
@@ -108,4 +117,9 @@ export default function QuoteDialog() {
             ))}
         </>
     );
+}
+
+
+QuoteDialog.propTypes = {
+    socket: PropTypes.object
 }

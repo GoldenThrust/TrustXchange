@@ -2,7 +2,7 @@ import FormField from "./FormField";
 import { useForm } from "react-hook-form";
 import PropTypes from 'prop-types';
 
-export default function Form({ title, data, onSubmit, error }) {
+export default function Form({ title, data, onSubmit, SubmitLabel = 'Submit', error }) {
     const formHook = useForm();
     const { handleSubmit } = formHook;
 
@@ -17,6 +17,7 @@ export default function Form({ title, data, onSubmit, error }) {
 
             <input
                 type="submit"
+                value={SubmitLabel}
                 className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-400"
             />
         </form>
@@ -27,5 +28,6 @@ Form.propTypes = {
     title: PropTypes.string.isRequired,
     data: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    SubmitLabel: PropTypes.string,
     error: PropTypes.string
 };

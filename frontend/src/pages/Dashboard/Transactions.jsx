@@ -32,7 +32,7 @@ export default function Transactions() {
                             </div>
                         </div>
                         <div className="flex justify-between font-mono">
-                            <span>{parseFloat(Number(transaction.quote.data.payin.amount).toPrecision(10))}{transaction.quote.data.payin.currencyCode} {'->'} {parseFloat(Number(transaction.quote.data.payout.amount).toPrecision(10))}{transaction.quote.data.payout.currencyCode}</span>
+                            <span>{parseFloat(Number(transaction.quote.data.payin.amount).toPrecision(10))}{transaction.quote.data.payin.currencyCode} {'→'} {parseFloat(Number(transaction.quote.data.payout.amount).toPrecision(10))}{transaction.quote.data.payout.currencyCode}</span>
                             <span>Status: {transaction.status}</span>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 import FormField from "../../components/FormField.jsx";
 import { useForm } from "react-hook-form";
 import PropTypes from 'prop-types';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPFIsOffering } from "../../messages/messageActions.js";
 import { useDispatch } from "react-redux";
 import { filtering } from "../../messages/messageSlice.js";
@@ -10,15 +10,19 @@ export default function FilterOffer({ data, error }) {
     const formHook = useForm();
     const formRef = useRef(null);
     const dispatch = useDispatch();
-
+    const [payout, setPayOut] = useState();
 
     useEffect(() => {
-        const handleChange = (e) => {
+        const formElements = formRef.current?.elements;
+
+        function filterOffer() {
             const payinCurrency = formRef.current?.elements?.payinCurrencyCode?.value;
             const payoutCurrency = formRef.current?.elements?.payoutCurrencyCode?.value;
             const minUnit = formRef.current?.elements?.minUnit?.value;
             const maxUnit = formRef.current?.elements?.maxUnit?.value;
             const pfi = formRef.current?.elements?.pfi?.value;
+
+            setPayOut(payoutCurrency);
 
 
             if (payinCurrency || payoutCurrency || minUnit || maxUnit || pfi) {
@@ -26,7 +30,7 @@ export default function FilterOffer({ data, error }) {
             } else {
                 dispatch(filtering(false));
             }
-    
+
             const payment = {
                 payinCurrencyCode: payinCurrency,
                 payoutCurrencyCode: payoutCurrency,
@@ -34,16 +38,20 @@ export default function FilterOffer({ data, error }) {
                 maxUnit,
                 pfi,
             };
-    
-            if (e.target.name === 'payinCurrencyCode') {
-                payment.payoutCurrencyCode = null;
-            }
-    
+
+
             dispatch(getPFIsOffering(payment));
+        }
+
+        const handleChange = () => {
+            filterOffer();
+
+            setTimeout(() => {
+                filterOffer(); // revalidate input data
+            }, 50)
         };
-    
-        const formElements = formRef.current?.elements;
-    
+
+
         if (formElements) {
             formElements.payinCurrencyCode?.addEventListener("change", handleChange);
             formElements.payoutCurrencyCode?.addEventListener("change", handleChange);
@@ -51,7 +59,7 @@ export default function FilterOffer({ data, error }) {
             formElements.maxUnit?.addEventListener("input", handleChange);
             formElements.pfi?.addEventListener("input", handleChange);
         }
-    
+
         return () => {
             if (formElements) {
                 formElements.payinCurrencyCode?.removeEventListener("change", handleChange);
@@ -61,7 +69,7 @@ export default function FilterOffer({ data, error }) {
                 formElements.pfi?.removeEventListener("input", handleChange);
             }
         };
-    }, [dispatch, data]);
+    }, [dispatch, data, payout]);
 
     return (
         <>
