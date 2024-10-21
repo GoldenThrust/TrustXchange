@@ -1,10 +1,9 @@
-import { TbdexHttpClient, Rfq, Quote, Order, OrderStatus, Close, Offering } from '@tbdex/http-client';
+import { TbdexHttpClient, Rfq, Order, OrderStatus, Close } from '@tbdex/http-client';
 import { PresentationExchange } from '@web5/credentials';
 import { pfiDids } from "../utils/constants.js";
 import { DidDht } from "@web5/dids";
-import User from '../models/user.js';
 import Transactions from '../models/transactions.js';
-import { mongoDB, redisDB } from "../config/db.js";
+import { redisDB } from "../config/db.js";
 import { getSecondsRemaining, pollRFQ } from '../utils/utils.js';
 import websocket from '../config/websocket.js';
 import mail from '../config/mail.js';

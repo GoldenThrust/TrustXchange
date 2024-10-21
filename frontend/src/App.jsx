@@ -21,6 +21,7 @@ import { getPFIsOffering, fetchTransactions, getActiveQuotes, getPFIStat } from 
 import Status from "./pages/Status.jsx";
 import Transactions from "./pages/Transactions/Transactions.jsx";
 import PFIStat from "./pages/PFIStat/PFIStat.jsx";
+import Profile from "./pages/Profile/Profile.jsx";
 
 
 const router = createBrowserRouter([
@@ -59,6 +60,9 @@ const router = createBrowserRouter([
     }, {
         path: "/pfistat",
         element: <PFIStat />
+    }, {
+        path: "/profile",
+        element: <Profile />
     }, {
         path: "/status",
         element: <Status />

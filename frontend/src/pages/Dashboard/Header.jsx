@@ -17,17 +17,17 @@ export default function Headers() {
 
     return (
         <header aria-label="Global" className="flex items-center justify-between p-4 lg:px-8">
-            <a href="/" className="m-1.5 p-1.5">
+            <Link to="/" className="m-1.5 p-1.5">
                 <span className="m-auto sr-only">TrustXchange</span>
                 <img
                     alt="logo"
                     src="logo.svg"
                     className="m-auto h-8 w-auto"
                 />
-            </a>
+            </Link>
             <div className="flex flex-row place-items-center gap-2 sm:gap:10">
                 <Link to='/transactions' className="text-nowrap hover:text-orange-600 border-solid border-y-2">Transactions History</Link>
-                <Link to='#'>
+                <Link to='/profile'>
                     <img
                         ref={profileImage}
                         alt="profile"

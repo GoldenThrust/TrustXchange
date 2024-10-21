@@ -39,49 +39,49 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use('/auth', authRoutes)
 app.use('/xchange', messengerRoute);
 
-// Generate sitemap
-app.get("/sitemap.xml", async function (req, res) {
-  res.header('Content-Type', 'application/xml');
-  res.header('Content-Encoding', 'gzip');
+// app.get("/sitemap.xml", async function (req, res) {
+//   res.header('Content-Type', 'application/xml');
+//   // res.header('Content-Encoding', 'gzip');
 
-  try {
-    let sitemap = await redisDB.get("sitemap");
+//   try {
+//     let sitemap = await redisDB.get("sitemap");
 
-    if (sitemap) {
-      res.send(sitemap);
-      return;
-    }
+//     console.log(sitemap);
 
-    const smStream = new SitemapStream({ hostname: 'https://localhost:3000/' });
-    const pipeline = smStream.pipe(createGzip());
+//     if (sitemap) {
+//       res.send(sitemap);
+//       return;
+//     }
 
-    const authEndpoints = [
-      { url: '/auth/register' },
-      { url: '/auth/login' },
-      { url: '/auth/verify' },
-      { url: '/auth/logout' },
-      { url: '/auth/activate' },
-      { url: '/auth/resend-activate' },
-      { url: '/auth/forgot-password' },
-      { url: '/auth/reset-password' }
-    ];
+//     const smStream = new SitemapStream({ hostname: 'https://localhost:3000/' });
+//     const pipeline = smStream.pipe(createGzip());
 
-    Readable.from(authEndpoints).pipe(smStream);
+//     const authEndpoints = [
+//       { url: '/auth/register' },
+//       { url: '/auth/login' },
+//       { url: '/auth/verify' },
+//       { url: '/auth/logout' },
+//       { url: '/auth/activate' },
+//       { url: '/auth/resend-activate' },
+//       { url: '/auth/forgot-password' },
+//       { url: '/auth/reset-password' }
+//     ];
 
-    const generatedSitemap = await streamToPromise(pipeline);
+//     Readable.from(authEndpoints).pipe(smStream);
 
-    await redisDB.set('sitemap', generatedSitemap, 10 * 24 * 60 * 60);
+//     const generatedSitemap = await streamToPromise(pipeline);
 
-    pipeline.pipe(res).on('error', (e) => {
-      throw e;
-    });
+//     pipeline.pipe(res).on('error', (e) => {
+//       throw e;
+//     });
 
-    smStream.end();
-  } catch (e) {
-    console.error(e);
-    res.status(500).end();
-  }
-});
+//     smStream.end();
+//     await redisDB.set('sitemap', generatedSitemap, 10 * 24 * 60 * 60);
+//   } catch (e) {
+//     console.error(e);
+//     res.status(500).end();
+//   }
+// });
 
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));

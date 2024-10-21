@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { Header } from './Authentication/header.jsx';
+import { Header } from '../components/Header.jsx';
 
 export default function Status() {
     const location = useLocation();

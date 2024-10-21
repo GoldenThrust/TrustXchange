@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Header } from './header.jsx';
+import { Header } from '../../components/Header.jsx';
 import { useEffect } from 'react';
 import { logoutAction } from '../../auth/authActions.js';
 import { useNavigate } from 'react-router-dom';

@@ -7,21 +7,70 @@ import { getVCTokens } from "../utils/token.js";
 import mail from "../config/mail.js";
 import { redisDB } from "../config/db.js";
 
+import fs from "fs";
+import { VerifiableCredential } from "@web5/credentials";
+
 class AuthenticationController {
     async verify(req, res) {
         try {
             const user = req.user;
 
-            const { name, email, address, image, city, state, country, zip, did } = user;
+            const { name, email, address, image, phonenumber, city, state, country, zip, did, vc } = user;
+            
 
             return res
                 .status(200)
-                .json({ status: "OK", message: { name, email, address, image, city, state, country, zip, did: did.uri } });
+                .json({ status: "OK", message: { name, email, address, image, phonenumber, city, state, country, zip, did: did.uri, vc: vc.length } });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ status: "ERROR", message: "Internal Server Error" });
         }
     }
+
+    async updateProfilePics(req, res) {
+        const user = req.user;
+        const { vc } = req.body;
+
+        if (fs.existsSync(user.image)) {
+            fs.unlinkSync(user.image);
+        }
+
+        let image = '';
+        if (req.file)
+            image = req.file.path;
+
+        if (image) 
+            user.image = image
+
+        if (vc) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                console.log(decoded);
+                
+                if (decoded.vc || decoded.verifiableCredential) {
+                    console.log('Valid JWT and contains a Verifiable Credential');
+                    
+                    const vc = new VerifiableCredential(decoded);
+                    
+                    if (vc.isValid()) {
+                        // user.vc.push(vc);
+                        console.log('Verifiable Credential is valid according to TBDex');
+                    } else {
+                        console.log('Verifiable Credential is not valid according to TBDex');
+                    }
+                } else {
+                    console.log('JWT is valid, but it does not contain a Verifiable Credential');
+                }
+            } catch (err) {
+                console.error('Invalid JWT:', err.message);
+            }
+    
+        }
+
+        user.save()
+        return res.status(200).json({ status: "OK" });
+    }
+
 
     async register(req, res) {
         try {

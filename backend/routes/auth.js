@@ -14,6 +14,6 @@ authRoutes.get('/activate/:token', authContoller.activateAccount)
 authRoutes.post('/resend-activate', authContoller.resendActivationEmail)
 authRoutes.post('/forgot-password', authContoller.forgotPassword)
 authRoutes.post('/reset-password/:token', validate(resetPasswordValidator), authContoller.resetPassword)
-
+authRoutes.post('/update-profile', upload.single('image'), verifyToken, checkUserMiddleware, authContoller.updateProfilePics)
 
 export default authRoutes;

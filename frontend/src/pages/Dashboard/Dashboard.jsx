@@ -1,5 +1,4 @@
 import Headers from "./Header.jsx"
-import { useNavigate } from "react-router-dom"
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FilterOffer from "./FilterOffer.jsx";
@@ -15,6 +14,7 @@ import { baseUrl } from "../../utils/constant.js";
 import toast from "react-hot-toast";
 import { getActiveQuotes } from "../../messages/messageActions.js";
 import ProcessingQuote from "./ProcessingQuote.jsx";
+import { useAuth } from "../../hook/auth.js";
 
 
 export default function DashBoard() {
@@ -24,8 +24,6 @@ export default function DashBoard() {
     const [paymentDetails, selectPaymentsDetails] = useState([]);
 
     const { paymentUnit, pfis } = useSelector((state) => state.xchange)
-    const { isAuthenticated } = useSelector((state) => state.auth)
-    const navigate = useNavigate();
     const dispatch = useDispatch();
     const socket = useRef();
 
@@ -45,14 +43,7 @@ export default function DashBoard() {
             socket.current.disconnect();
         };
     }, [dispatch]);
-
-
-
-    useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login', { replace: true });
-        }
-    }, [isAuthenticated, navigate])
+    useAuth();
 
     useEffect(() => {
         setTransactionCurrency([

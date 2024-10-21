@@ -1,4 +1,4 @@
-import { Header } from './header.jsx';
+import { Header } from '../../components/Header.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { accountActivation } from '../../auth/authActions.js';
 import { useEffect } from 'react';

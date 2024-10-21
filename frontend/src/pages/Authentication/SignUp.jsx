@@ -1,4 +1,4 @@
-import { Header } from "./header.jsx";
+import { Header } from "../../components/Header.jsx";
 import { useForm } from "react-hook-form";
 import { countryCode } from "../../utils/constant.js";
 import { useDispatch, useSelector } from 'react-redux';
@@ -102,6 +102,7 @@ export default function SignUp() {
             type="file"
             {...register("image")}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            accept="image/*"
           />
         </label>
 
