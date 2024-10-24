@@ -142,8 +142,9 @@ export const closeQuotes = (data) => async (dispatch) => {
 
 export const getPFIStat = () => async (dispatch) => {
     const pfi = []
-    const response = await axios.get('xchange/getpfistats');
+    const response = await axios.get('review/get-pfistats');
     const data = await response.data;
+
     data.forEach((stat) => {
         pfi.push(stat.pfiName)
     })

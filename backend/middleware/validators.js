@@ -148,3 +148,17 @@ export const offeringFilterValidator = [
     .isLength({ min: 3, max: 4 })
     .withMessage("Payout currency code should be 3 characters long"),
 ]
+
+
+export const reviewValidator = [
+  body('rating')
+    .trim()
+    .notEmpty()
+    .withMessage("Please provide a rating")
+    .isNumeric({ min: 1, max: 10 })
+    .withMessage("Rating should be a number between 1 and 10"),
+  body('exchangeId')
+    .trim()
+    .notEmpty()
+    .withMessage("Please provide an exchangeId"),
+]

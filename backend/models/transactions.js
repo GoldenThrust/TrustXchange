@@ -6,8 +6,9 @@ const TransactionsSchema = Schema({
         ref: 'User',
         required: true
     },
-    pfiName: {
-        type: String,
+    pfi: {
+        type: Schema.Types.ObjectId,
+        ref: 'PFI',
         required: true
     },
     transaction: {

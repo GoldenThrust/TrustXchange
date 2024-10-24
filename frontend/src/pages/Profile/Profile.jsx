@@ -60,7 +60,6 @@ export default function Profile() {
 
 
 
-    console.log(user)
     return (
         <div>
             <Header className="flex justify-between px-10" >

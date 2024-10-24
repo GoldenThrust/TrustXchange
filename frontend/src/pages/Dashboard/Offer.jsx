@@ -2,6 +2,7 @@ import { selectedOffer } from "../../messages/messageActions.js";
 import { useDispatch, useSelector } from "react-redux";
 import { formattedDate } from "../../utils/functions.js";
 import { useEffect, useMemo, useState } from "react";
+import { Building } from "lucide-react";
 
 export default function Offer() {
     const { pfiOfferings, selectedOfferings, filtering } = useSelector((state) => state.xchange);
@@ -50,7 +51,7 @@ export default function Offer() {
                                     className={`p-2 text-zinc-50 rounded-lg h-20 flex flex-col place-content-center ${offering.verificationFailed ? 'bg-red-500' : 'bg-indigo-500'} ${isSelected ? 'border border-green-600 shadow-md bg-violet-600 animate-bounce' : ''}`}
                                 >
                                     <div className="flex justify-between">
-                                        <span className="text-sm font-bold">{pfiName}</span>
+                                        <span className="flex gap-1 text-sm font-bold"> <Building /> {pfiName}</span>
                                         <span className="font-light text-xs">Created at: {formattedDate(offering.metadata.createdAt)}</span>
                                     </div>
                                     <div className="text-xs"><b>Payout per pay-in unit:</b> {offering.data.payoutUnitsPerPayinUnit}</div>

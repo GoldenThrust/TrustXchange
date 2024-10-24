@@ -47,7 +47,7 @@ class WebSocketManager {
 
     emitQuoteStatus(status, exchangeId) {
         if (this.socket) {
-            this.io.to(this.room).emit("quote_status", exchangeId, status);
+            this.io.to(this.room).emit("quote_status", exchangeId, status );
         } else {
             console.error("Socket is not connected, unable to emit quote status.");
         }
@@ -61,9 +61,9 @@ class WebSocketManager {
         }
     }
 
-    emitCloseQuote() {
+    emitCloseQuote(exchangeId) {
         if (this.socket) {
-            this.io.to(this.room).emit("close_quote");
+            this.io.to(this.room).emit("close_quote", exchangeId);
         } else {
             console.error("Socket is not connected, unable to emit close quote.");
         }

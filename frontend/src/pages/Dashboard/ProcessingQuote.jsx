@@ -2,18 +2,38 @@ import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 import { getActiveQuotes, getProcessingQuotes, updateProcessingQuotes } from "../../messages/messageActions.js"
 import PropTypes from "prop-types"
-
+import { toast } from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
+import { Star } from "lucide-react"
 export default function ProcessingQuote({ socket }) {
     const dispatch = useDispatch()
     const { processingQuote } = useSelector((state) => state.xchange)
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const notify = (id) => {
+            toast((t) => (
+                <div>
+                    <button
+                        onClick={() => {
+                            navigate(`/transactions?exchangeid=${id}`)
+                            toast.dismiss(t.id);
+                        }}>
+                        <div className="flex gap-1">
+                            <Star size={20} color="springgreen" fill="springgreen" /> Review Transaction
+                        </div>
+                    </button>
+                </div>
+            ));
+        };
+
         dispatch(getProcessingQuotes())
         socket?.on("quote_status", (exchangeId, status) => {
             console.log(`Quote status updated: ${exchangeId} - ${status}`)
             if (status === "SUCCESS") {
                 setTimeout(() => {
                     dispatch(getProcessingQuotes())
+                    notify(exchangeId)
                 }, 1000)
                 dispatch(getActiveQuotes());
             }
@@ -22,8 +42,8 @@ export default function ProcessingQuote({ socket }) {
         })
 
 
-        socket?.on("close_quote", () => {
-            console.log("Quote closed");
+        socket?.on("close_quote", (exchangeId) => {
+            notify(exchangeId);
             dispatch(getProcessingQuotes());
             dispatch(getActiveQuotes());
         })
@@ -39,7 +59,7 @@ export default function ProcessingQuote({ socket }) {
             socket?.off("close_quote");
             socket?.off("process_quote");
         };
-    }, [dispatch, socket])
+    }, [dispatch, socket, navigate])
 
     return (<>
         {processingQuote && Object.keys(processingQuote)[0] ?

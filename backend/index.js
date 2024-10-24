@@ -6,15 +6,15 @@ import { mongoDB, redisDB } from "./config/db.js";
 import "dotenv/config"
 
 import websocket from "./config/websocket.js";
-import { SitemapStream, streamToPromise } from "sitemap";
-import { Readable } from "stream";
-import { createGzip } from "zlib";
+// import { SitemapStream, streamToPromise } from "sitemap";
+// import { Readable } from "stream";
+// import { createGzip } from "zlib";
 import path from "path";
 
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import messengerRoute from "./routes/messenger.js";
-
+import reviewsRoute from "./routes/reviews.js";
 // import { TbdexHttpClient } from "@tbdex/http-client";
 import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-streams-adapter";
@@ -38,6 +38,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use('/auth', authRoutes)
 app.use('/xchange', messengerRoute);
+app.use('/review', reviewsRoute)
 
 // app.get("/sitemap.xml", async function (req, res) {
 //   res.header('Content-Type', 'application/xml');

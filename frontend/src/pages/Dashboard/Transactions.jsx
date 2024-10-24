@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { formattedDate } from "../../utils/functions.js";
 import { useSelector } from "react-redux";
+import { CheckCircle } from "lucide-react";
 
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
 
-    
+
     const { recentTransactions } = useSelector((state) => state.xchange);
 
     useEffect(() => {
-        setTransactions(recentTransactions);        
+        setTransactions(recentTransactions);
     }, [recentTransactions]);
 
     const memoisedTransaction = useMemo(() => {
@@ -20,11 +21,11 @@ export default function Transactions() {
         <>
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Transactions</h2>
             <div className="grid gap-2 grid-cols-1 xl:grid-cols-2">
-                {memoisedTransaction.map((transaction) => (
+                {memoisedTransaction.map(({transaction}) => (
                     <div key={transaction.quote.metadata.exchangeId} className="quote flex h-24 bg-blue-400 text-teal-50 justify-between flex-col rounded-2xl p-2">
                         <div className="flex justify-between">
                             <div>
-                                <div className="font-semibold">{transaction.quote.pfiName}</div>
+                                <div className="font-semibold flex gap-1"><CheckCircle /> {transaction.quote.pfiName}</div>
                                 <div className="text-xs">{transaction.quote.metadata.exchangeId}</div>
                             </div>
                             <div>

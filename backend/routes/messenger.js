@@ -15,6 +15,6 @@ messengerRoute.post("/accept-quote", validate(quoteValidator), verifyToken, chec
 messengerRoute.get("/active-quotes", verifyToken, checkUserMiddleware, messageController.getActiveQuotes);
 messengerRoute.get("/processing-quotes", verifyToken, checkUserMiddleware, messageController.getAllProcessingQuotes)
 messengerRoute.get("/transactions", verifyToken, checkUserMiddleware, messageController.getTransactions);
-messengerRoute.get("/getpfistats", messageController.getAllPFIStats);
+
 
 export default messengerRoute;

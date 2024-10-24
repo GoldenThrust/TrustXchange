@@ -1,32 +1,33 @@
 import PropTypes from 'prop-types';
+import ReactPaginate from 'react-paginate';
 
 export default function Pagination({ transactionsPerPage, totalTransactions, paginate, currentPage }) {
-  const pageNumbers = [];
+  const pageCount = Math.ceil(totalTransactions / transactionsPerPage);
 
-  // Calculate total number of pages
-  for (let i = 1; i <= Math.ceil(totalTransactions / transactionsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  // Handle page change
+  const handlePageClick = (data) => {
+    const selectedPage = data.selected + 1; 
+    paginate(selectedPage);
+  };
 
   return (
     <nav className="flex justify-center mt-4">
-      <ul className="inline-flex items-center space-x-1">
-        {pageNumbers.map((number) => (
-          <li key={number}>
-            <a
-              onClick={() => paginate(number)}
-              role="button"
-              tabIndex="0"
-              onKeyDown={(e) => e.key === 'Enter' && paginate(number)}
-              className={`px-3 py-2 border rounded-md 
-                ${number === currentPage ? 'bg-gray-300 text-gray-900' : 'bg-white text-gray-600'}
-                hover:bg-gray-200 hover:text-gray-900 cursor-pointer`}
-            >
-              {number}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <ReactPaginate
+        previousLabel={"Previous"}
+        nextLabel={"Next"}
+        breakLabel={"..."}
+        breakClassName={"break-me"}
+        pageCount={pageCount}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"inline-flex items-center space-x-1"}
+        pageClassName={"px-3 py-2 border rounded-md bg-white text-gray-600 cursor-pointer hover:bg-gray-200 hover:text-gray-900"}
+        previousClassName={"px-3 py-2 border rounded-md bg-white text-gray-600 cursor-pointer hover:bg-gray-200 hover:text-gray-900"}
+        nextClassName={"px-3 py-2 border rounded-md bg-white text-gray-600 cursor-pointer hover:bg-gray-200 hover:text-gray-900"}
+        activeClassName={"bg-emerald-500 text-white"}
+        forcePage={currentPage - 1}
+      />
     </nav>
   );
 }

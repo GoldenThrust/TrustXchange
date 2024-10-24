@@ -1,6 +1,5 @@
 import { TbdexHttpClient, Rfq, Order, OrderStatus, Close } from '@tbdex/http-client';
 import { PresentationExchange } from '@web5/credentials';
-import { pfiDids } from "../utils/constants.js";
 import { DidDht } from "@web5/dids";
 import Transactions from '../models/transactions.js';
 import { redisDB } from "../config/db.js";
@@ -8,6 +7,8 @@ import { getSecondsRemaining, pollRFQ } from '../utils/utils.js';
 import websocket from '../config/websocket.js';
 import mail from '../config/mail.js';
 import { RFQQueue } from '../worker.js';
+import PFI from '../models/pfi.js';
+import Review from '../models/review.js';
 
 
 class MessageController {
@@ -22,20 +23,26 @@ class MessageController {
         const offering = JSON.parse(await redisDB.get('offerings'));
 
 
-        if (!offering) {
-            const promises = Object.entries(pfiDids).map(async ([key, pfiDid]) => {
-                const offerings = await TbdexHttpClient.getOfferings({ pfiDid });
-                response[key] = offerings;
-            });
+        try {
+            if (!offering) {
+                const pfis = await PFI.find({})
+                const promises = pfis.map(async (pfi) => {
 
-            await Promise.all(promises);
+                    const offerings = await TbdexHttpClient.getOfferings({ pfiDid: pfi.pfiDid });
+                    response[pfi.name] = offerings;
+                });
 
-            redisDB.set('offerings', JSON.stringify(response), 24 * 60 * 60);
-        } else {
-            response = offering;
+                await Promise.all(promises);
+
+                redisDB.set('offerings', JSON.stringify(response), 24 * 60 * 60);
+            } else {
+                response = offering;
+            }
+            return response;
+        } catch (err) {
+            console.error(err);
+            return {};
         }
-
-        return response;
     }
     async getOfferings(req, res) {
         try {
@@ -207,12 +214,10 @@ class MessageController {
             const exchangeId = rfq.exchangeId;
             let quote = null;
             let close = null;
-            let pfiName = '';
 
-            Object.entries(pfiDids).map(async ([key, pfiDid]) => {
-                if (pfiDid === offering.metadata.from)
-                    pfiName = key;
-            });
+            const pfi = await PFI.findOne({ pfiDid: offering.metadata.from });
+            let pfiName = pfi.name;
+
 
             const options = {
                 pfiDid: offering.metadata.from,
@@ -269,7 +274,9 @@ class MessageController {
 
             quote.privateData = {};
 
-            await Transactions.create({ user, quote, transaction: close, status: 'CLOSED', exchangeId, pfiName: quote.pfiName });
+            const pfi = await PFI.findOne({ pfiDid });
+
+            await Transactions.create({ user, quote, transaction: close, status: 'CLOSED', exchangeId, pfi });
             redisDB.hdel(user._id.toString(), exchangeId)
             res.status(200).json({ ...close, status: "OK" })
         } catch (err) {
@@ -278,7 +285,7 @@ class MessageController {
             return res.status(400).json({ error: 'Failed to close quote' });
         }
 
-        websocket.emitCloseQuote();
+        websocket.emitCloseQuote(exchangeId || '');
     }
 
     async acceptQuote(req, res) {
@@ -341,8 +348,9 @@ class MessageController {
 
             quote.privateData = {};
 
+            const pfi = await PFI.findOne({ pfiDid });
 
-            await Transactions.create({ user, quote, transaction: close || {}, status, exchangeId, pfiName: quote.pfiName });
+            await Transactions.create({ user, quote, transaction: close || {}, status, exchangeId, pfi });
 
             await redisDB.hdel(key, exchangeId);
             await redisDB.hdel(user._id.toString(), exchangeId)
@@ -401,73 +409,42 @@ class MessageController {
 
         res.json(quotes);
     }
-
     async getTransactions(req, res) {
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-
-        const skip = (page - 1) * limit;
-
-        const user = req.user;
-
-        const transactions = await Transactions.find({ user: user._id })
-            .sort({ createdAt: -1 })
-            .limit(limit)
-            .skip(skip);
-
-        const totalTransactions = await Transactions.countDocuments({ user: user._id });
-
-        return res.status(200).json({
-            transactions,
-            totalTransactions,
-            currentPage: page
-        });
-    }
-    async getAllPFIStats(req, res) {
         try {
-            const pfiStats = await Transactions.aggregate([
-                {
-                    $group: {
-                        _id: "$pfiName",
-                        totalTransactions: { $sum: 1 },
-                        canceledTransactions: {
-                            $sum: { $cond: [{ $eq: ["$status", "CLOSED"] }, 1, 0] }
-                        }
-                    }
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        totalTransactions: 1,
-                        canceledTransactions: 1,
-                        successRate: {
-                            $cond: [
-                                { $gt: ["$totalTransactions", 0] },
-                                { $multiply: [{ $divide: [{ $subtract: ["$totalTransactions", "$canceledTransactions"] }, "$totalTransactions"] }, 100] },
-                                0
-                            ]
-                        },
-                        cancellationRate: {
-                            $cond: [
-                                { $gt: ["$totalTransactions", 0] },
-                                { $multiply: [{ $divide: ["$canceledTransactions", "$totalTransactions"] }, 100] },
-                                0
-                            ]
-                        }
-                    }
-                }
+            const page = parseInt(req.query.page, 10) || 1;
+            const limit = parseInt(req.query.limit, 10) || 10;
+            const skip = (page - 1) * limit;
+
+            const userId = req.user._id;
+
+            const [transactions, totalTransactions] = await Promise.all([
+                Transactions.find({ user: userId })
+                    .sort({ createdAt: -1 })
+                    .limit(limit)
+                    .skip(skip)
+                    .populate('pfi'),
+                Transactions.countDocuments({ user: userId })
             ]);
 
-            return res.status(200).json(pfiStats.map(pfi => ({
-                pfiName: pfi._id,
-                totalTransactions: pfi.totalTransactions,
-                canceledTransactions: pfi.canceledTransactions,
-                successRate: pfi.successRate.toFixed(2),
-                cancellationRate: pfi.cancellationRate.toFixed(2)
-            })))
+            const revTransactions = await Promise.all(transactions.map(async (transaction) => {
+                const review = await Review.findOne({ user: userId, transaction: transaction._id });
+                return {
+                    transaction,
+                    review: !!review
+                };
+            }));
+
+            return res.status(200).json({
+                transactions: revTransactions,
+                totalTransactions,
+                currentPage: page
+            });
         } catch (error) {
-            console.error('Error fetching PFI stats:', error);
-            res.status(500).json(error);
+            console.error('Error fetching transactions:', error);
+            return res.status(500).json({
+                message: 'An error occurred while fetching transactions.',
+                error: error.message
+            });
         }
     }
 
