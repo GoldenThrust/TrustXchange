@@ -37,10 +37,10 @@ export default function Login() {
       <Header />
       <Form title="Sign In" data={formData} onSubmit={onSubmit} error={loginerror} SubmitLabel='Login' />
       <div className="flex justify-between m-auto w-10/12 my-10">
-        <Link to="/forgot-password" className="text-indigo-600">
+        <Link to="/forgot-password" className="text-indigo-600 hover:text-indigo-800">
           Forgot password?
         </Link>
-        <Link to="/signup" className="text-indigo-600">
+        <Link to="/signup" className="text-indigo-600 hover:text-indigo-800">
           {"Don't have an account? Sign Up"}
         </Link>
       </div>

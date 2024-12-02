@@ -90,11 +90,13 @@ export default function Profile() {
                             <label htmlFor="vc" className="text-center block font-extrabold" > Add VC: </label>
                             <textarea form="profileForm" {...register('vc')} className="resize-none w-5/6 m-auto block border-2"></textarea>
 
-                            <form id="profileForm" onSubmit={handleSubmit(onSubmit)}>
+
+                            <form id="profileForm" onSubmit={handleSubmit(onSubmit)} className="block m-auto w-5/6 space-y-2">
+                            <Link to={'../register-pfi'} className="text-indigo-600 hover:text-indigo-800" >Become partnering Financial Institution</Link>
                                 <input
                                     type="submit"
                                     value="Save Changes"
-                                    className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-400"
+                                    className="py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-400 w-full"
                                 />
                             </form>
                         </div>

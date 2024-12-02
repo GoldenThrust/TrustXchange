@@ -117,10 +117,10 @@ export default function SignUp() {
         />
       </form>
       <div className="flex justify-between m-auto w-10/12 my-10">
-        <Link to="/login" className="text-indigo-600">
+        <Link to="/login" className="text-indigo-600 hover:text-indigo-800">
           Already have an account? Sign in
         </Link>
-        <Link to="/resend-activation-token" className="text-indigo-600">
+        <Link to="/resend-activation-token" className="text-indigo-600 hover:text-indigo-800">
           Activation link expired? Click here to resend.
         </Link>
       </div>

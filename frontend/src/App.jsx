@@ -22,6 +22,7 @@ import Status from "./pages/Status.jsx";
 import Transactions from "./pages/Transactions/Transactions.jsx";
 import PFIStat from "./pages/PFIStat/PFIStat.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
+import RegisterPFI from "./pages/Profile/PFI/RegisterPFI.jsx";
 
 
 const router = createBrowserRouter([
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
         path: "/profile",
         element: <Profile />
     }, {
+        path: "/register-pfi",
+        element: <RegisterPFI />,
+
+    }, {
         path: "/status",
         element: <Status />
     }
@@ -75,7 +80,7 @@ export default function App() {
 
     useEffect(() => {
         if (!isAuthenticated) {
-            dispatch(verify())
+            dispatch(verify());
         }
     }, [dispatch, isAuthenticated]);
 
