@@ -25,7 +25,7 @@ export default function Pagination({ transactionsPerPage, totalTransactions, pag
         pageClassName={"px-3 py-2 border rounded-md bg-white text-gray-600 cursor-pointer hover:bg-gray-200 hover:text-gray-900"}
         previousClassName={"px-3 py-2 border rounded-md bg-white text-gray-600 cursor-pointer hover:bg-gray-200 hover:text-gray-900"}
         nextClassName={"px-3 py-2 border rounded-md bg-white text-gray-600 cursor-pointer hover:bg-gray-200 hover:text-gray-900"}
-        activeClassName={"bg-emerald-500 text-white"}
+        activeClassName={"bg-emerald-500"}
         forcePage={currentPage - 1}
       />
     </nav>

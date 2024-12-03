@@ -19,8 +19,13 @@ class MessageController {
     }
 
     async test(req, res) {
-        const offerings  = await TbdexHttpClient.getOfferings({ pfiDid: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y" });
-        res.json(offerings);
+        try {
+            const offerings = await TbdexHttpClient.getOfferings({ pfiDid: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y" });
+            res.json(offerings);
+        } catch (e) {
+            console.log(e);
+            res.send(e)
+        }
     }
 
     async fetchAllOfferings() {
@@ -42,7 +47,7 @@ class MessageController {
             } else {
                 response = offering;
             }
-            return response;
+            return response || {};
         } catch (err) {
             console.error(err);
             return {};
@@ -104,7 +109,9 @@ class MessageController {
             });
         } catch (error) {
             console.error('Error fetching offerings:', error);
-            res.status(500).json({ status: "ERROR", message: "Internal server error" });
+            res.status(500).json({ status: "ERROR", message: "Internal server error", offerings: {}, paymentUnit: {
+                minPaymentUnit: 0, maxPaymentUnit: 0
+            } });
         }
     }
 

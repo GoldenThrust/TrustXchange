@@ -11,6 +11,7 @@ import fs from "fs";
 import { VerifiableCredential } from "@web5/credentials";
 import PFI from "../models/pfi.js";
 
+const domain = (new URL(hostUrl)).hostname
 class AuthenticationController {
     async verify(req, res) {
         try {
@@ -165,7 +166,7 @@ class AuthenticationController {
                 secure: true,
                 sameSite: "none",
                 httpOnly: true,
-                domain: hostUrl,
+                domain,
                 signed: true,
                 path: "/",
             });
@@ -179,7 +180,7 @@ class AuthenticationController {
                 sameSite: "none",
                 httpOnly: true,
                 path: "/",
-                domain: hostUrl,
+                domain,
                 expires,
                 signed: true,
             });
@@ -211,7 +212,7 @@ class AuthenticationController {
                 secure: true,
                 sameSite: "none",
                 httpOnly: true,
-                domain: hostUrl,
+                domain,
                 signed: true,
                 path: "/",
             });
@@ -274,7 +275,7 @@ class AuthenticationController {
             secure: true,
             sameSite: "none",
             httpOnly: true,
-            domain: hostUrl,
+            domain,
             signed: true,
             path: "/",
         });
@@ -288,7 +289,7 @@ class AuthenticationController {
             sameSite: "none",
             httpOnly: true,
             path: "/",
-            domain: hostUrl,
+            domain,
             expires,
             signed: true,
         });
